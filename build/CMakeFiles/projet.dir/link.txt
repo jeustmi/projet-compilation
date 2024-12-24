@@ -1,0 +1,1 @@
+/usr/bin/c++ -rdynamic CMakeFiles/projet.dir/parser/main.cc.o CMakeFiles/projet.dir/parser/driver.cc.o CMakeFiles/projet.dir/parser.cpp.o CMakeFiles/projet.dir/scanner.cpp.o -o projet  libexpressions.a 
