@@ -59,12 +59,12 @@ return token::IMAGE;
 
 \%\% {
 yylval->build<std::string>(YYText());
-return token::COMENTAIRE;
+return token::COMMENTAIRE;
 }
 
 \%\%\%.*\%\%\%    {//reconnais un % suivi d'un commentaire sur une seule ligne
 yylval->build<std::string>(YYText());
-return token::COMENTAIRELONG;
+return token::COMMENTAIRE;
 }
 
 
