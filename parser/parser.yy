@@ -10,10 +10,6 @@
 
 %code requires{
     #include "contexte.hh"
-    #include "expressionBinaire.hh"
-    #include "expressionUnaire.hh"
-    #include "constante.hh"
-    #include "variable.hh"
     #include "text.hh"
 
     class Scanner;
@@ -42,14 +38,12 @@
 %token                  IMAGE
 %token                  DEFINITION
 %token                  COMMENTAIRE
-%token                  COMMENTAIRELONG
 %token <std::string>    TEXT
 
 
 
 
 %type <std::shared_ptr<ExpressionText>> texte
-%type <int>             operation
 %left '-' '+'
 %left '*' '/'
 %precedence  NEG
@@ -94,34 +88,7 @@ commentaire:
     COMMENTAIRE{
         std::cout << "#-> commentaire "<< std::endl;
     }
-/*
-affectation:
-    '=' { std::cout << "Affectation à réaliser" << std::endl;
-    }
 
-operation:
-    NUMBER {
-        $$ = $1;
-    }
-    | '(' operation ')' {
-        $$ = $2;
-    }
-    | operation '+' operation {
-        $$ = $1 + $3;
-    }
-    | operation '-' operation {
-        $$ = $1 - $3;
-    }
-    | operation '*' operation {
-        $$ = $1 * $3;
-    }
-    | operation '/' operation {
-        $$ = $1 / $3;
-    }
-    | '-' operation %prec NEG {
-        $$ = - $2;
-    }
-*/
 %%
 
 void yy::Parser::error( const location_type &l, const std::string & err_msg) {

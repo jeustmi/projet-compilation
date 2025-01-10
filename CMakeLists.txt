@@ -16,19 +16,11 @@ include_directories(parser expressions ${CMAKE_CURRENT_BINARY_DIR})
 file(GLOB EXPRESSION_HEADERS 
     expressions/contexte.hh
     expressions/expression.hh
-    expressions/expressionBinaire.hh
-    expressions/expressionUnaire.hh
-    expressions/constante.hh
-    expressions/variable.hh
     expressions/text.hh
     )
 
 add_library(expressions 
     expressions/contexte.cc
-    expressions/expressionBinaire.cc
-    expressions/expressionUnaire.cc
-    expressions/constante.cc
-    expressions/variable.cc
     expressions/text.cc
     ${EXPRESSION_HEADERS}
     )
