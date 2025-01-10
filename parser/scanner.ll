@@ -56,8 +56,6 @@ yylval->build<std::string>(YYText());
 return token::COMENTAIRELONG;
 }
 
-
-
 "\n"          {
     loc->lines();
     return token::NL;
