@@ -40,16 +40,16 @@
 %token <int>            TITRE
 %token                  PARAGRAPH
 %token                  IMAGE
-%token                  COMENTAIRE
-%token                  COMENTAIRELONG
+%token                  DEFINITION
+%token                  COMMENTAIRE
+%token                  COMMENTAIRELONG
 %token <std::string>    TEXT
 
 
 
 
-%type <std::shared_ptr<ExpressionText>> text
+%type <std::shared_ptr<ExpressionText>> texte
 %type <int>             operation
-%type <std::string>     texte
 %left '-' '+'
 %left '*' '/'
 %precedence  NEG
@@ -60,80 +60,41 @@ programme:
     instruction NL programme
     |commentaire NL programme
     | instruction{
-        std::cout << "YYACEPT"  << std::endl;
         YYACCEPT;
     }
     | commentaire{
-        std::cout << "YYACEPT"  << std::endl;
         YYACCEPT;
     }
 
 instruction:
-    expression  {
-        //YYACCEPT;
+    bloc{
+
     }
-    | affectation {
-      //YYACCEPT;
+    //variables
+    //conditions
+    //boucles
+
+bloc:
+    TITRE texte{
+        std::cout<<"Titre "<<std::to_string($1)<<" : "<<$2->calculer()<< std::endl;
     }
-    | contenu {
-      //YYACCEPT;
+    |PARAGRAPH texte{
+        std::cout<<"Paragraphe "<<" : "<<$2<< std::endl;
+    }
+    |IMAGE texte{
+        std::cout<<"Image "<<" : "<<$2<< std::endl;
     }
 
-expression:
-    operation {
-        //Modifier cette partie pour prendre en compte la structure avec expressions
-        std::cout << "#-> " << $1 << std::endl;
-    }
-    | text {
-        try{
-            std::string val = $1->calculer(/*driver.getContexte()*/);
-            std::cout << "text-> " << val << std::endl;
-        }
-        catch(const std::exception& err) {
-			std::cerr << "#-> " << err.what() << std::endl;
-		}
-    }
-
-text:
+texte:
     TEXT {
         $$ = std::make_shared<ExpressionText>($1);
     }
 
 commentaire:
-    COMENTAIRE{
-        std::cout << "#-> commentaire "<<$1 << std::endl;
+    COMMENTAIRE{
+        std::cout << "#-> commentaire "<< std::endl;
     }
-
-contenu:
-    texte {
-        //Modifier cette partie pour prendre en compte la structure avec expressions
-        std::cout << "#-> " << $1 << std::endl;
-    }
-
-texte:
-    TITRE{
-        std::string a=$1;
-        int niveau =-1;
-        do
-        {
-            a=a.substr(1,a.length());
-            ++niveau;
-        }
-        while(a[0]=='T');
-        a=a.substr(1,a.length());
-        $$="Titre "+std::to_string(niveau)+" : "+a;
-    }
-    |PARAGRAPH{
-        std::string a=$1;
-        a=a.substr(3,a.length());
-        $$="Paragrahpe : "+a;
-    }
-    |IMAGE{
-        std::string a=$1;
-        a=a.substr(3,a.length());
-        $$="Image : "+a;
-    }
-
+/*
 affectation:
     '=' { std::cout << "Affectation à réaliser" << std::endl;
     }
@@ -160,7 +121,7 @@ operation:
     | '-' operation %prec NEG {
         $$ = - $2;
     }
-
+*/
 %%
 
 void yy::Parser::error( const location_type &l, const std::string & err_msg) {

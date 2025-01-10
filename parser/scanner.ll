@@ -31,12 +31,17 @@ fin return token::END;
 "/" return '/';
 "(" return '(';
 ")" return ')';
+"{" return '{';
+"}" return '}';
 "=" return '=';
-
 
 [0-9]+      {
     yylval->build<int>(std::atoi(YYText()));
     return token::NUMBER;
+}
+
+\@DEFINE {
+    return token::DEFINITION;
 }
 
 \!T+ {
@@ -57,14 +62,16 @@ return token::PARAGRAPH;
 return token::IMAGE;
 }
 
-\%\% {
-yylval->build<std::string>(YYText());
-return token::COMENTAIRE;
+(encodage)|(icone)|(css)|(langue) {
+    return token::PARAGRAPH;
 }
 
-\%\%\%.*\%\%\%    {//reconnais un % suivi d'un commentaire sur une seule ligne
-yylval->build<std::string>(YYText());
-return token::COMENTAIRELONG;
+\%\% {
+return token::COMMENTAIRE;
+}
+
+\%\%\%   {//reconnais un % suivi d'un commentaire sur une seule ligne
+return token::COMMENTAIRELONG;
 }
 
 "\n"          {
