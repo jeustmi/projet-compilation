@@ -33,9 +33,20 @@ fin return token::END;
 ")" return ')';
 "=" return '=';
 
+
+[0-9]+      {
+    yylval->build<int>(std::atoi(YYText()));
+    return token::NUMBER;
+}
+
 \!T+ {
 yylval->build<int>(YYLeng()-1);
 return token::TITRE;
+}
+
+\'([^']|\\\')*\' {
+    yylval->build<std::string>(YYText());
+    return token::TEXT;
 }
 
 \!P {
