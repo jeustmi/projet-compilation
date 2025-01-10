@@ -14,7 +14,6 @@
     #include "expressionUnaire.hh"
     #include "constante.hh"
     #include "variable.hh"
-    #include "text.hh"
 
     class Scanner;
     class Driver;
@@ -37,10 +36,16 @@
 %token                  NL
 %token                  END
 %token <int>            NUMBER
-%token <std::string>    TEXT
+%token <int>            TITRE
+%token                  PARAGRAPH
+%token                  IMAGE
+%token                  COMENTAIRE
+%token                  COMENTAIRELONG
 
-%type <std::shared_ptr<ExpressionText>> text
+
+
 %type <int>             operation
+%type <std::string>     texte
 %left '-' '+'
 %left '*' '/'
 %precedence  NEG
@@ -49,16 +54,25 @@
 
 programme:
     instruction NL programme
-    | END NL {
+    |commentaire NL programme
+    | instruction{
+        std::cout << "YYACEPT"  << std::endl;
+        YYACCEPT;
+    }
+    | commentaire{
+        std::cout << "YYACEPT"  << std::endl;
         YYACCEPT;
     }
 
 instruction:
     expression  {
-        YYACCEPT;
+        //YYACCEPT;
     }
     | affectation {
-      YYACCEPT;
+      //YYACCEPT;
+    }
+    | contenu {
+      //YYACCEPT;
     }
 
 expression:
@@ -66,19 +80,40 @@ expression:
         //Modifier cette partie pour prendre en compte la structure avec expressions
         std::cout << "#-> " << $1 << std::endl;
     }
-    | text {
-        try{
-            std::string val = $1->calculer(/*driver.getContexte()*/);
-            std::cout << "text-> " << val << std::endl;
-        }
-        catch(const std::exception& err) {
-			std::cerr << "#-> " << err.what() << std::endl;
-		}
+
+commentaire:
+    COMENTAIRE{
+        std::cout << "#-> commentaire "<<$1 << std::endl;
     }
 
-text:
-    TEXT {
-        $$ = std::make_shared<ExpressionText>($1);
+contenu:
+    texte {
+        //Modifier cette partie pour prendre en compte la structure avec expressions
+        std::cout << "#-> " << $1 << std::endl;
+    }
+
+texte:
+    TITRE{
+        std::string a=$1;
+        int niveau =-1;
+        do
+        {
+            a=a.substr(1,a.length());
+            ++niveau;
+        }
+        while(a[0]=='T');
+        a=a.substr(1,a.length());
+        $$="Titre "+std::to_string(niveau)+" : "+a;
+    }
+    |PARAGRAPH{
+        std::string a=$1;
+        a=a.substr(3,a.length());
+        $$="Paragrahpe : "+a;
+    }
+    |IMAGE{
+        std::string a=$1;
+        a=a.substr(3,a.length());
+        $$="Image : "+a;
     }
 
 affectation:
