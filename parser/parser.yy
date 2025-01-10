@@ -14,6 +14,7 @@
     #include "expressionUnaire.hh"
     #include "constante.hh"
     #include "variable.hh"
+    #include "text.hh"
 
     class Scanner;
     class Driver;
@@ -41,9 +42,12 @@
 %token                  IMAGE
 %token                  COMENTAIRE
 %token                  COMENTAIRELONG
+%token <std::string>    TEXT
 
 
 
+
+%type <std::shared_ptr<ExpressionText>> text
 %type <int>             operation
 %type <std::string>     texte
 %left '-' '+'
@@ -79,6 +83,20 @@ expression:
     operation {
         //Modifier cette partie pour prendre en compte la structure avec expressions
         std::cout << "#-> " << $1 << std::endl;
+    }
+    | text {
+        try{
+            std::string val = $1->calculer(/*driver.getContexte()*/);
+            std::cout << "text-> " << val << std::endl;
+        }
+        catch(const std::exception& err) {
+			std::cerr << "#-> " << err.what() << std::endl;
+		}
+    }
+
+text:
+    TEXT {
+        $$ = std::make_shared<ExpressionText>($1);
     }
 
 commentaire:
