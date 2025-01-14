@@ -32,6 +32,8 @@ using token = yy::Parser::token;
 ")" return ')';
 "{" return '{';
 "}" return '}';
+"[" return '[';
+"]" return ']';
 "=" return '=';
 
 \@DEFINE {
