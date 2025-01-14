@@ -78,13 +78,14 @@ css {
     return token::CSS;
 }
 
-\%\% {
-yylval->build<std::string>(YYText());
-return token::COMMENTAIRE;
+\%\%.*\n {
+    yylval->build<std::string>(YYText());
+    return token::COMMENTAIRE;
 }
 
-\%\%\%.*\%\%\%    {//reconnais un % suivi d'un commentaire sur une seule ligne
-yylval->build<std::string>(YYText());
+\%\%\%(%{0,2}[^%])*\%\%\%    {
+    yylval->build<std::string>(YYText());
+    return token::COMMENTAIRE;
 }
 
 "\n"          {

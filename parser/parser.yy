@@ -11,6 +11,7 @@
 %code requires{
     #include "contexte.hh"
     #include "text.hh"
+    #include "commentaire.hh"
 
     class Scanner;
     class Driver;
@@ -49,8 +50,9 @@
 
 
 
-%type <std::shared_ptr<ExpressionText>> texte
 %type <std::string> objet
+%type <ExpressionPtr> commentaire
+%type <ExpressionPtr> texte
 %left '-' '+'
 %left '*' '/'
 %precedence  NEG
@@ -136,8 +138,9 @@ texte:
     }
 
 commentaire:
-    COMMENTAIRE{
-        std::cout << "#-> commentaire "<< std::endl;
+    COMMENTAIRE {
+        //std::cout << "#-> commentaire "<< $1 << std::endl;
+        //$$ = std::make_shared<ExpressionComm>($1);
     }
 
 %%
