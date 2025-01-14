@@ -109,7 +109,7 @@ opacité {
     return token::OPACITY;
 }
 
-\%\%.*\n {
+\%\%.* {
     yylval->build<std::string>(YYText());
     return token::COMMENTAIRE;
 }

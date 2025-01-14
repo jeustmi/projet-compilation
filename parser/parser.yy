@@ -38,7 +38,7 @@
 %token                  IMAGE
 %token                  DEFINITION
 %token                  TITREPAGE
-%token                  COMMENTAIRE
+%token <std::string>    COMMENTAIRE
 %token                  ENCODAGE
 %token                  ICON
 %token                  CSS
@@ -78,7 +78,7 @@ programme:
     }
     | commentaire NL{
         YYACCEPT;
-    }
+    }    
 
 instruction:
     bloc{
