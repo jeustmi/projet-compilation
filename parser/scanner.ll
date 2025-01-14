@@ -23,7 +23,6 @@ using token = yy::Parser::token;
 %{
     yylval = lval;
 %}
-fin return token::END;
 
 "+" return '+';
 "*" return '*';
@@ -37,6 +36,10 @@ fin return token::END;
 
 \@DEFINE {
     return token::DEFINITION;
+}
+
+\@TITREPAGE {
+    return token::TITREPAGE;
 }
 
 \!T+ {
@@ -57,8 +60,22 @@ return token::PARAGRAPH;
 return token::IMAGE;
 }
 
-(encodage)|(icone)|(css)|(langue) {
-    return token::PARAGRAPH;
+encodage {
+    return token::ENCODAGE;
+}
+
+
+langue {
+    return token::LANG;
+}
+
+
+icone {
+    return token::ICON;
+}
+
+css {
+    return token::CSS;
 }
 
 \%\%.*\n {
