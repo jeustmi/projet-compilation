@@ -51,7 +51,7 @@
 
 
 %type <std::string> objet
-%type <ExpressionPtr> commentaire
+//%type <ExpressionPtr> commentaire
 %type <ExpressionPtr> texte
 %left '-' '+'
 %left '*' '/'
@@ -80,7 +80,7 @@ instruction:
 
     }
     | meta_donnees{
-
+        
     }
     //variables
     //conditions
@@ -101,6 +101,16 @@ meta_donnees:
     }
     | TITREPAGE TEXT{
         std::cout<<"La page s'apellera "<<" : "<<$2<< std::endl;
+        ExpressionText D2($2);
+        try{
+            std::string val = D2.calculer(/*driver.getContexte()*/);
+            std::cout<<val<<std::endl;
+			driver.setVariable("charset", val);
+			std::cout << "#-> " << $2 << " = " << val << std::endl;
+        }
+        catch(const std::exception& err) {
+            std::cerr << "#-> " << err.what() << std::endl;
+        }
     }
 
 bloc:
@@ -139,8 +149,10 @@ texte:
 
 commentaire:
     COMMENTAIRE NL {
-        $$ = std::make_shared<ExpressionComm>($1);
-        std::cout << "#-> commentaire "<< $$->calculer() << std::endl;
+        //$$ = std::make_shared<ExpressionComm>($1);
+        //std::cout << "#-> commentaire "<< $$->calculer() << std::endl;
+        ExpressionComm D1($1);
+        std::cout << "#-> commentaire "<< D1.calculer() << std::endl;
     }
 
 %%

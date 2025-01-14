@@ -5,7 +5,7 @@
 
 class ExpressionText : public Expression {
 public:
-    ExpressionText() = delete;
+    ExpressionText() =delete;
     ExpressionText(const ExpressionText &) = default;
     ExpressionText(std::string const & text) : _text(text) {}
 

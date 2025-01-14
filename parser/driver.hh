@@ -7,17 +7,15 @@
 
 class Driver {
 private:
-    Contexte variables;       
+    Contexte _variables;       
 
 public:
     Driver();
     ~Driver();
 
-   /* TODO 
     const   Contexte& getContexte() const;
-    double  getVariable(const std::string& name) const;
-    void    setVariable(const std::string& name, double value);
-  */
+    std::string  getVariable(const std::string& name) const;
+    void    setVariable(const std::string& name, std::string value);
 };
 
 #endif

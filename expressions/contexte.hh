@@ -6,17 +6,17 @@
 
 class Contexte {
 private:
-    std::map<std::string, double> variables;
+    std::map<std::string, std::string> variables;
 
 public:
     Contexte() = default;
     Contexte(const Contexte & autre) = default;
 
-    double& get(const std::string & nom);
-    const double& get(const std::string & nom) const;
+    std::string& get(const std::string & nom);
+    const std::string& get(const std::string & nom) const;
 
-    double& operator[](const std::string & nom);
-    const double& operator[](const std::string & nom) const;
+    std::string& operator[](const std::string & nom);
+    const std::string& operator[](const std::string & nom) const;
 
 };
 
