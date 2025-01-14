@@ -139,8 +139,8 @@ texte:
 
 commentaire:
     COMMENTAIRE NL {
-        //std::cout << "#-> commentaire "<< $1 << std::endl;
-        //$$ = std::make_shared<ExpressionComm>($1);
+        $$ = std::make_shared<ExpressionComm>($1);
+        std::cout << "#-> commentaire "<< $$->calculer() << std::endl;
     }
 
 %%
