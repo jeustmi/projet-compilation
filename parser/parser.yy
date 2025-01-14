@@ -11,6 +11,7 @@
 %code requires{
     #include "contexte.hh"
     #include "text.hh"
+    #include "commentaire.hh"
 
     class Scanner;
     class Driver;
@@ -37,13 +38,13 @@
 %token                  PARAGRAPH
 %token                  IMAGE
 %token                  DEFINITION
-%token                  COMMENTAIRE
+%token <std::string>    COMMENTAIRE
 %token <std::string>    TEXT
 
 
 
-
-%type <std::shared_ptr<ExpressionText>> texte
+%type <ExpressionPtr> commentaire
+%type <ExpressionPtr> texte
 %left '-' '+'
 %left '*' '/'
 %precedence  NEG
@@ -51,12 +52,16 @@
 %%
 
 programme:
-    instruction NL programme
-    |commentaire NL programme
+    instruction NL programme 
     | instruction{
         YYACCEPT;
     }
     | commentaire{
+        std::cout << "comm : " << $1->calculer() << std::endl; 
+        YYACCEPT;
+    }
+    | texte {
+        std::cout << "texte : " << $1->calculer() << std::endl; 
         YYACCEPT;
     }
 
@@ -85,8 +90,9 @@ texte:
     }
 
 commentaire:
-    COMMENTAIRE{
-        std::cout << "#-> commentaire "<< std::endl;
+    COMMENTAIRE {
+        //std::cout << "#-> commentaire "<< $1 << std::endl;
+        $$ = std::make_shared<ExpressionComm>($1);
     }
 
 %%

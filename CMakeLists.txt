@@ -17,11 +17,13 @@ file(GLOB EXPRESSION_HEADERS
     expressions/contexte.hh
     expressions/expression.hh
     expressions/text.hh
+    expressions/commentaire.hh
     )
 
 add_library(expressions 
     expressions/contexte.cc
     expressions/text.cc
+    expressions/commentaire.cc
     ${EXPRESSION_HEADERS}
     )
 
