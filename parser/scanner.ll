@@ -78,7 +78,7 @@ css {
     return token::CSS;
 }
 
-\%\%.*\n {
+\%\%.* {
     yylval->build<std::string>(YYText());
     return token::COMMENTAIRE;
 }
