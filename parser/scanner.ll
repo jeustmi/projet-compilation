@@ -35,6 +35,15 @@ using token = yy::Parser::token;
 "[" return '[';
 "]" return ']';
 "=" return '=';
+"," return ',';
+":" return ':';
+"px" return 'p';
+"%" return 'p';
+
+[0-9]+      {
+    yylval->build<int>(std::atoi(YYText()));
+    return token::NUMBER;
+}
 
 \@DEFINE {
     return token::DEFINITION;
@@ -78,6 +87,26 @@ icone {
 
 css {
     return token::CSS;
+}
+
+largeur {
+    return token::WIDTH;
+}
+
+hauteur {
+    return token::HEIGHT;
+}
+
+couleurTexte {
+    return token::TEXTCOLOR;
+}
+
+couleurFond {
+    return token::BACKGROUNDCOLOR;
+}
+
+opacité {
+    return token::OPACITY;
 }
 
 \%\%.*\n {

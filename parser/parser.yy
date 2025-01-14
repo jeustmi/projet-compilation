@@ -32,6 +32,7 @@
 }
 
 %token                  NL
+%token <int>            NUMBER
 %token <int>            TITRE
 %token                  PARAGRAPH
 %token                  IMAGE
@@ -42,10 +43,12 @@
 %token                  ICON
 %token                  CSS
 %token                  LANG
-%token <std::string>    LANG_VAL
-%token <std::string>    ENCODAGE_VAL
-%token <std::string>    CHEMIN
 %token <std::string>    TEXT
+%token                  WIDTH
+%token                  HEIGHT
+%token                  TEXTCOLOR
+%token                  BACKGROUNDCOLOR
+%token                  OPACITY
 
 
 
@@ -53,6 +56,8 @@
 %type <std::string> objet
 %type <ExpressionPtr> commentaire
 %type <ExpressionPtr> texte
+%type <int> taille
+%type <int> ratio
 %left '-' '+'
 %left '*' '/'
 %precedence  NEG
@@ -117,19 +122,51 @@ bloc:
 objet:
     texte{
         $$=$1->calculer();
-    }/*
-    |ENCODAGE texte{
-        $$=$2;
     }
-    |ICON texte{
-        $$=$2;
+    | '['atributs']' texte{
+
     }
-    |CSS texte{
-            $$=$2;
-        }
-    |LANG LANG_VAL texte{
-            $$=$2;
-        }*/
+
+atributs:
+    atribut','atributs{
+
+    }
+    | atribut
+
+atribut:
+    HEIGHT ':' taille{
+
+    }
+    | WIDTH ':' taille{
+        
+    }
+    | TEXTCOLOR ':' couleur{
+        
+    }
+    | BACKGROUNDCOLOR ':' couleur{
+        
+    }
+    | OPACITY ':' ratio{
+        
+    }
+
+taille:
+    NUMBER{
+        $$=$1;
+    }
+    | NUMBER'p'{
+        $$=$1;
+    }
+
+ratio:
+    NUMBER{
+        $$=$1;
+    }
+    | NUMBER'%'{
+        $$=$1;
+    }
+
+couleur:
 
 
 texte:
@@ -138,7 +175,7 @@ texte:
     }
 
 commentaire:
-    COMMENTAIRE NL {
+    COMMENTAIRE {
         $$ = std::make_shared<ExpressionComm>($1);
         std::cout << "#-> commentaire "<< $$->calculer() << std::endl;
     }
