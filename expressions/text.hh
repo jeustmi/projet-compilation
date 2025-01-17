@@ -3,13 +3,13 @@
 
 #include <string>
 
-class ExpressionText : public Expression {
+class Text{
 public:
-    ExpressionText() =delete;
-    ExpressionText(const ExpressionText &) = default;
-    ExpressionText(std::string const & text) : _text(text) {}
+    Text() =delete;
+    Text(const Text &) = default;
+    Text(std::string const & text) : _text(text) {}
 
-    std::string calculer(/*const Contexte& contexte*/) override;
+    std::string calculer(/*const Contexte& contexte*/);
 
 private:
     std::string _text;

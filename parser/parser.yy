@@ -12,6 +12,7 @@
     #include "contexte.hh"
     #include "text.hh"
     #include "commentaire.hh"
+    #include "programme.hh"
 
     class Scanner;
     class Driver;
@@ -55,7 +56,7 @@
 
 %type <std::string> objet
 //%type <ExpressionPtr> commentaire
-%type <ExpressionPtr> texte
+%type <std::shared_ptr<Text>> texte
 %type <int> taille
 %type <int> ratio
 %left '-' '+'
@@ -106,7 +107,7 @@ meta_donnees:
     }
     | TITREPAGE TEXT{
         std::cout<<"La page s'apellera "<<" : "<<$2<< std::endl;
-        ExpressionText D2($2);
+        Text D2($2);
         try{
             std::string val = D2.calculer(/*driver.getContexte()*/);
             std::cout<<val<<std::endl;
@@ -181,14 +182,14 @@ couleur:
 
 texte:
     TEXT {
-        $$ = std::make_shared<ExpressionText>($1);
+        $$ = std::make_shared<Text>($1);
     }
 
 commentaire:
     COMMENTAIRE NL {
         //$$ = std::make_shared<ExpressionComm>($1);
         //std::cout << "#-> commentaire "<< $$->calculer() << std::endl;
-        ExpressionComm D1($1);
+        Commentaire D1($1);
         std::cout << "#-> commentaire "<< D1.calculer() << std::endl;
     }
 

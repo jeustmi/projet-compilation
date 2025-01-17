@@ -114,7 +114,7 @@ opacité {
     return token::COMMENTAIRE;
 }
 
-\%\%\%(%{0,2}[^%])*\%\%\%    {
+\%\%\%(\%{0,2}[^%])*\%\%\%    {
     yylval->build<std::string>(YYText());
     return token::COMMENTAIRE;
 }
