@@ -38,12 +38,20 @@
 %token                  IMAGE
 %token                  DEFINITION
 %token                  TITREPAGE
+%token                  STYLE
 %token <std::string>    COMMENTAIRE
 %token                  ENCODAGE
 %token                  ICON
 %token                  CSS
 %token                  LANG
+%token                  PAGE
+%token                  PARA
+%token                  IF
+%token                  ENDIF
+%token                  ELSE
+%token <int>            TITR
 %token <std::string>    TEXT
+%token <std::string>    COLOR
 %token                  WIDTH
 %token                  HEIGHT
 %token                  TEXTCOLOR
@@ -65,22 +73,26 @@
 %%
 
 programme:
-    instruction NL programme 
-    |commentaire NL programme
-    | instruction{
+    code{
         YYACCEPT;
+    }
+
+code:
+    instruction NL code 
+    |commentaire NL code
+    | instruction{
     }
     | commentaire{
-        YYACCEPT;
     }
     | instruction NL{
-        YYACCEPT;
     }
     | commentaire NL{
-        YYACCEPT;
     }    
 
 instruction:
+    conditionelle{
+
+    }
     bloc{
 
     }
@@ -90,6 +102,10 @@ instruction:
     //variables
     //conditions
     //boucles
+
+conditionelle:
+    IF '('  ')' ':' code ENDIF
+    |IF '('  ')' ':' code ELSE ':' code ENDIF
 
 meta_donnees:
     DEFINITION '('ENCODAGE')' '{'TEXT'}'{
@@ -117,6 +133,15 @@ meta_donnees:
             std::cerr << "#-> " << err.what() << std::endl;
         }
     }
+    | STYLE '(' PAGE ')' '['atributs']'{
+
+    }
+    | STYLE '(' PARA ')' '['atributs']'{
+        
+    }
+    | STYLE '(' TITR ')' '['atributs']'{
+        
+    }
 
 bloc:
     TITRE objet{
@@ -134,7 +159,7 @@ objet:
         $$=$1->calculer();
     }
     | '['atributs']' texte{
-
+        $$=$4->calculer();
     }
 
 atributs:
@@ -177,7 +202,7 @@ ratio:
     }
 
 couleur:
-
+    COLOR
 
 texte:
     TEXT {

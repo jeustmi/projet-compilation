@@ -53,6 +53,10 @@ using token = yy::Parser::token;
     return token::TITREPAGE;
 }
 
+\@STYLE {
+    return token::STYLE;
+}
+
 \!T+ {
 yylval->build<int>(YYLeng()-1);
 return token::TITRE;
@@ -61,6 +65,11 @@ return token::TITRE;
 \'([^']|\\\')*\' {
     yylval->build<std::string>(YYText());
     return token::TEXT;
+}
+
+\#[0-9A-F]{6} {
+    yylval->build<std::string>(std::atoi(YYText()));
+    return token::COLOR;
 }
 
 \!P {
@@ -74,7 +83,6 @@ return token::IMAGE;
 encodage {
     return token::ENCODAGE;
 }
-
 
 langue {
     return token::LANG;
@@ -109,10 +117,37 @@ opacité {
     return token::OPACITY;
 }
 
+page {
+    return token::PAGE;
+}
+
+titre[0-9] {
+    yylval->build<int>(YYText()[5]-'0');
+    return token::TITR;
+}
+
+paragraphe {
+    return token::PARA;
+}
+
+SI {
+    return token::IF;
+}
+
+FINSI {
+    return token::ENDIF;
+}
+
+SINON {
+    return token::ELSE;
+}
+
 \%\%.* {
     yylval->build<std::string>(YYText());
     return token::COMMENTAIRE;
 }
+
+
 
 \%\%\%(%{0,2}[^%])*\%\%\%    {
     yylval->build<std::string>(YYText());
