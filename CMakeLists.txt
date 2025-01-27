@@ -18,12 +18,16 @@ file(GLOB EXPRESSION_HEADERS
     expressions/expression.hh
     expressions/text.hh
     expressions/commentaire.hh
+    expressions/programme.hh
+    expressions/instruction.hh
     )
 
 add_library(expressions 
     expressions/contexte.cc
     expressions/text.cc
     expressions/commentaire.cc
+    expressions/programme.cc
+    expressions/instruction.cc
     ${EXPRESSION_HEADERS}
     )
 

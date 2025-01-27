@@ -12,6 +12,7 @@
     #include "contexte.hh"
     #include "text.hh"
     #include "commentaire.hh"
+    #include "programme.hh"
 
     class Scanner;
     class Driver;
@@ -49,6 +50,9 @@
 %token                  IF
 %token                  ENDIF
 %token                  ELSE
+%token                  FOR
+%token                  END
+%token <std::string>    ID
 %token <int>            TITR
 %token <std::string>    TEXT
 %token <std::string>    COLOR
@@ -62,8 +66,8 @@
 
 
 %type <std::string> objet
-//%type <ExpressionPtr> commentaire
-%type <ExpressionPtr> texte
+%type <ExpressionPtr> commentaire
+%type <std::shared_ptr<Text>> texte
 %type <int> taille
 %type <int> ratio
 %left '-' '+'
@@ -78,34 +82,75 @@ programme:
     }
 
 code:
-    instruction NL code 
-    |commentaire NL code
-    | instruction{
+    instruction NL code {
+
     }
-    | commentaire{
+    | instruction{
     }
     | instruction NL{
     }
-    | commentaire NL{
-    }    
 
 instruction:
     conditionelle{
 
     }
-    bloc{
+    |boucle{
+
+    }
+    |bloc{
 
     }
     | meta_donnees{
         
     }
-    //variables
-    //conditions
-    //boucles
+    |commentaire{
+
+    }
+    |declaration{
+
+    }
+
+declaration:
+    ID '=' NUMBER{
+
+    }
+    |ID '=' COLOR{
+
+    }
+    |ID '=' bloc{
+
+    }
+    |ID '=' style{
+
+    }
 
 conditionelle:
-    IF '('  ')' ':' code ENDIF
-    |IF '('  ')' ':' code ELSE ':' code ENDIF
+    IF '(' condition ')' ':' code ENDIF
+    |IF '(' condition ')' ':' code ELSE ':' code ENDIF
+
+condition:
+    booleen '&' condition{
+
+    }
+    |booleen '|' condition{
+
+    }
+    |'!' booleen{
+
+    }
+    |booleen{
+        
+    }
+
+booleen://fonctionnera probablement comme les opérateurs binaires de la calculatrice
+
+boucle:
+    FOR ID '['NUMBER','NUMBER']' '+'NUMBER ':' code END{
+
+    }
+    |FOR ID '['NUMBER','NUMBER']' '-'NUMBER ':' code END{
+
+    }
 
 meta_donnees:
     DEFINITION '('ENCODAGE')' '{'TEXT'}'{
@@ -122,7 +167,7 @@ meta_donnees:
     }
     | TITREPAGE TEXT{
         std::cout<<"La page s'apellera "<<" : "<<$2<< std::endl;
-        ExpressionText D2($2);
+        Text D2($2);
         try{
             std::string val = D2.calculer(/*driver.getContexte()*/);
             std::cout<<val<<std::endl;
@@ -133,13 +178,13 @@ meta_donnees:
             std::cerr << "#-> " << err.what() << std::endl;
         }
     }
-    | STYLE '(' PAGE ')' '['atributs']'{
+    | STYLE '(' PAGE ')' style{
 
     }
-    | STYLE '(' PARA ')' '['atributs']'{
+    | STYLE '(' PARA ')' style{
         
     }
-    | STYLE '(' TITR ')' '['atributs']'{
+    | STYLE '(' TITR ')' style{
         
     }
 
@@ -155,11 +200,17 @@ bloc:
     }
 
 objet:
-    texte{
+    texte{std::cout<<"objet1 :";
         $$=$1->calculer();
     }
-    | '['atributs']' texte{
-        $$=$4->calculer();
+    |  style texte{
+        std::cout<<"objet2 :";
+        $$=$2->calculer();
+    }
+
+style:
+    '['atributs']'{
+        std::cout<<"style :";
     }
 
 atributs:
@@ -206,14 +257,14 @@ couleur:
 
 texte:
     TEXT {
-        $$ = std::make_shared<ExpressionText>($1);
+        $$ = std::make_shared<Text>($1);
     }
 
 commentaire:
-    COMMENTAIRE NL {
+    COMMENTAIRE {
         //$$ = std::make_shared<ExpressionComm>($1);
         //std::cout << "#-> commentaire "<< $$->calculer() << std::endl;
-        ExpressionComm D1($1);
+        Commentaire D1($1);
         std::cout << "#-> commentaire "<< D1.calculer() << std::endl;
     }
 

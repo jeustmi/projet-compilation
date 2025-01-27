@@ -1,6 +1,6 @@
 #include "commentaire.hh"
 
-std::string ExpressionComm::calculer() {
+std::string Commentaire::calculer() {
     int i=0;
     while(_comm[i]=='%'){
         _comm[i]='\0';

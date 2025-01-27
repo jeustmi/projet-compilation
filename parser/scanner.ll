@@ -35,10 +35,14 @@ using token = yy::Parser::token;
 "[" return '[';
 "]" return ']';
 "=" return '=';
+"-" return '-';
+"+" return '+';
 "," return ',';
 ":" return ':';
 "px" return 'p';
 "%" return 'p';
+"&&" return '&';
+"||" return '|';
 
 [0-9]+      {
     yylval->build<int>(std::atoi(YYText()));
@@ -68,7 +72,7 @@ return token::TITRE;
 }
 
 \#[0-9A-F]{6} {
-    yylval->build<std::string>(std::atoi(YYText()));
+    yylval->build<std::string>(YYText());
     return token::COLOR;
 }
 
@@ -142,19 +146,30 @@ SINON {
     return token::ELSE;
 }
 
+POUR {
+    return token::FOR;
+}
+
+FINI {
+    return token::END;
+}
+
 \%\%.* {
     yylval->build<std::string>(YYText());
     return token::COMMENTAIRE;
 }
 
-
-
-\%\%\%(%{0,2}[^%])*\%\%\%    {
+\%\%\%(\%{0,2}[^%])*\%\%\%    {
     yylval->build<std::string>(YYText());
     return token::COMMENTAIRE;
 }
 
-"\n"          {
+[a-z][a-zA-Z0-9]+ {
+    yylval->build<std::string>(YYText());
+    return token::ID;
+}
+
+"\n"+          {
     loc->lines();
     return token::NL;
 }
