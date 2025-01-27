@@ -35,13 +35,12 @@ using token = yy::Parser::token;
 "[" return '[';
 "]" return ']';
 "=" return '=';
-"-" return '-';
-"+" return '+';
 "," return ',';
 ":" return ':';
 "px" return 'p';
-"%" return 'p';
+"%" return '%';
 "&&" return '&';
+"#" return '#';
 "||" return '|';
 
 [0-9]+      {
@@ -71,9 +70,13 @@ return token::TITRE;
     return token::TEXT;
 }
 
-\#[0-9A-F]{6} {
+rgb {
+    return token::RGB;
+}
+
+\#[0-9A-Fa-f]{6} {
     yylval->build<std::string>(YYText());
-    return token::COLOR;
+    return token::HEXANUMBER;
 }
 
 \!P {

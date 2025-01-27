@@ -55,7 +55,8 @@
 %token <std::string>    ID
 %token <int>            TITR
 %token <std::string>    TEXT
-%token <std::string>    COLOR
+%token <std::string>    HEXANUMBER
+%token                  RGB
 %token                  WIDTH
 %token                  HEIGHT
 %token                  TEXTCOLOR
@@ -66,7 +67,7 @@
 
 
 %type <std::string> objet
-%type <ExpressionPtr> commentaire
+//%type <ExpressionPtr> commentaire
 %type <std::shared_ptr<Text>> texte
 %type <int> taille
 %type <int> ratio
@@ -100,7 +101,7 @@ instruction:
     |bloc{
 
     }
-    | meta_donnees{
+    |meta_donnees{
         
     }
     |commentaire{
@@ -114,7 +115,7 @@ declaration:
     ID '=' NUMBER{
 
     }
-    |ID '=' COLOR{
+    |ID '=' couleur{
 
     }
     |ID '=' bloc{
@@ -200,18 +201,17 @@ bloc:
     }
 
 objet:
-    texte{std::cout<<"objet1 :";
+    texte{
         $$=$1->calculer();
     }
     |  style texte{
-        std::cout<<"objet2 :";
         $$=$2->calculer();
     }
 
 style:
-    '['atributs']'{
-        std::cout<<"style :";
-    }
+    '['atributs']' {
+
+}
 
 atributs:
     atribut','atributs{
@@ -253,7 +253,13 @@ ratio:
     }
 
 couleur:
-    COLOR
+    /*'#' HEXANUMBER {
+        
+    }*/
+    HEXANUMBER {
+        
+    }
+    |RGB '('NUMBER','NUMBER','NUMBER')'
 
 texte:
     TEXT {
@@ -262,8 +268,8 @@ texte:
 
 commentaire:
     COMMENTAIRE {
-        //$$ = std::make_shared<ExpressionComm>($1);
-        //std::cout << "#-> commentaire "<< $$->calculer() << std::endl;
+        //$ $ = std::make_shared<ExpressionComm>($1);
+        //std::cout << "#-> commentaire "<< $ $->calculer() << std::endl;
         Commentaire D1($1);
         std::cout << "#-> commentaire "<< D1.calculer() << std::endl;
     }
