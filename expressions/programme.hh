@@ -1,8 +1,9 @@
 #pragma once
 #include "commentaire.hh"
-#include "instruction.hh"
+#include "bloc.hh"
 
 #include <vector>
+#include <memory>
 
 class Definition;
 
@@ -12,6 +13,6 @@ class programme{
     void creation_page();
     private:
     std::vector<Definition> _defs;
-    std::vector<Instruction> _insts;
     std::vector<Commentaire> _comms;
+    std::vector<std::shared_ptr<Bloc>> _insts;
 };

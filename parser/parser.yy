@@ -73,7 +73,6 @@
 %type <int> ratio
 %left '-' '+'
 %left '*' '/'
-%precedence  NEG
 
 %%
 
