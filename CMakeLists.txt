@@ -19,7 +19,13 @@ file(GLOB EXPRESSION_HEADERS
     expressions/text.hh
     expressions/commentaire.hh
     expressions/programme.hh
-    expressions/instruction.hh
+    expressions/bloc.hh
+    expressions/attribut.hh
+    expressions/largeur.hh
+    expressions/hauteur.hh
+    expressions/couleurTexte.hh
+    expressions/couleurFond.hh
+    expressions/opacite.hh
     )
 
 add_library(expressions 
@@ -27,7 +33,13 @@ add_library(expressions
     expressions/text.cc
     expressions/commentaire.cc
     expressions/programme.cc
-    expressions/instruction.cc
+    expressions/bloc.cc
+    expressions/attribut.cc
+    expressions/largeur.cc
+    expressions/hauteur.cc
+    expressions/couleurTexte.cc
+    expressions/couleurFond.cc
+    expressions/
     ${EXPRESSION_HEADERS}
     )
 

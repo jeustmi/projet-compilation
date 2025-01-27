@@ -66,13 +66,12 @@
 
 
 %type <std::string> objet
-%type <ExpressionPtr> commentaire
+//%type <ExpressionPtr> commentaire
 %type <std::shared_ptr<Text>> texte
 %type <int> taille
 %type <int> ratio
 %left '-' '+'
 %left '*' '/'
-%precedence  NEG
 
 %%
 
@@ -203,7 +202,7 @@ objet:
     texte{std::cout<<"objet1 :";
         $$=$1->calculer();
     }
-    |  style texte{
+    | style texte{
         std::cout<<"objet2 :";
         $$=$2->calculer();
     }
