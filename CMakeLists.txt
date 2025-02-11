@@ -39,7 +39,6 @@ add_library(expressions
     expressions/hauteur.cc
     expressions/couleurTexte.cc
     expressions/couleurFond.cc
-    expressions/
     ${EXPRESSION_HEADERS}
     )
 

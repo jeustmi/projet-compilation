@@ -30,6 +30,7 @@
 
     #undef  yylex
     #define yylex scanner.yylex
+    Programme prog;
 }
 
 %token                  NL
@@ -68,7 +69,7 @@
 
 %type <std::string> objet
 //%type <ExpressionPtr> commentaire
-%type <std::shared_ptr<Text>> texte
+%type <std::string> texte
 %type <int> taille
 %type <int> ratio
 %left '-' '+'
@@ -78,6 +79,7 @@
 
 programme:
     code{
+        prog.creation_page();
         YYACCEPT;
     }
 
@@ -153,30 +155,25 @@ boucle:
     }
 
 meta_donnees:
-    DEFINITION '('ENCODAGE')' '{'TEXT'}'{
+    DEFINITION '('ENCODAGE')' '{'texte'}'{
         std::cout<<"Encodage "<<" : "<<$6<< std::endl;
+        prog.setEncodage($6);
     }
-    | DEFINITION '('ICON')' '{'TEXT'}'{
+    | DEFINITION '('ICON')' '{'texte'}'{
         std::cout<<"Icone "<<" : "<<$6<< std::endl;
+        prog.setIcone($6);
     }
-    | DEFINITION '('CSS')' '{'TEXT'}'{
+    | DEFINITION '('CSS')' '{'texte'}'{
         std::cout<<"CSS "<<" : "<<$6<< std::endl;
+        prog.addCss($6);
     }
-    | DEFINITION '('LANG')' '{'TEXT'}'{
+    | DEFINITION '('LANG')' '{'texte'}'{
         std::cout<<"Langue "<<" : "<<$6<< std::endl;
+        prog.setLangue($6);
     }
-    | TITREPAGE TEXT{
-        std::cout<<"La page s'apellera "<<" : "<<$2<< std::endl;
-        Text D2($2);
-        try{
-            std::string val = D2.calculer(/*driver.getContexte()*/);
-            std::cout<<val<<std::endl;
-			driver.setVariable("charset", val);
-			std::cout << "#-> " << $2 << " = " << val << std::endl;
-        }
-        catch(const std::exception& err) {
-            std::cerr << "#-> " << err.what() << std::endl;
-        }
+    | TITREPAGE texte{
+        std::cout<<"Titre "<<" : "<<$2<< std::endl;
+        prog.setTitre($2);
     }
     | STYLE '(' PAGE ')' style{
 
@@ -201,10 +198,10 @@ bloc:
 
 objet:
     texte{
-        $$=$1->calculer();
+        $$=$1;
     }
     |  style texte{
-        $$=$2->calculer();
+        $$=$2;
     }
 
 style:
@@ -262,7 +259,7 @@ couleur:
 
 texte:
     TEXT {
-        $$ = std::make_shared<Text>($1);
+        $$ = Text($1).calculer();
     }
 
 commentaire:
@@ -271,6 +268,7 @@ commentaire:
         //std::cout << "#-> commentaire "<< $ $->calculer() << std::endl;
         Commentaire D1($1);
         std::cout << "#-> commentaire "<< D1.calculer() << std::endl;
+        prog.addComm(D1);
     }
 
 %%
