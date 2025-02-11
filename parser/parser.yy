@@ -50,6 +50,8 @@
 %token                  IF
 %token                  ENDIF
 %token                  ELSE
+%token                  TRUE
+%token                  FALSE
 %token                  FOR
 %token                  END
 %token <std::string>    ID
@@ -57,6 +59,7 @@
 %token <std::string>    TEXT
 %token <std::string>    HEXANUMBER
 %token                  RGB
+%token                  VAR_STYLE
 %token                  WIDTH
 %token                  HEIGHT
 %token                  TEXTCOLOR
@@ -76,6 +79,9 @@
 
 %%
 
+//----------------------------------------------------------------------------------------------------------------
+//Reconnaissance du langage :
+
 programme:
     code{
         YYACCEPT;
@@ -85,10 +91,13 @@ code:
     instruction NL code {
 
     }
+    | NL code{
+    }
     | instruction{
     }
     | instruction NL{
     }
+    
 
 instruction:
     conditionelle{
@@ -111,22 +120,15 @@ instruction:
     }
 
 declaration:
-    ID '=' NUMBER{
-
-    }
-    |ID '=' couleur{
-
-    }
-    |ID '=' bloc{
-
-    }
-    |ID '=' style{
-
+    identite  '=' {std::cout<<" est affecté à ";} valeur{
+        std::cout<<std::endl;
     }
 
 conditionelle:
-    IF '(' condition ')' ':' code ENDIF
-    |IF '(' condition ')' ':' code ELSE ':' code ENDIF
+    IF '(' condition ')' ':'  code code_else ENDIF 
+
+code_else:
+    |ELSE ':' code
 
 condition:
     booleen '&' condition{
@@ -143,13 +145,32 @@ condition:
     }
 
 booleen://fonctionnera probablement comme les opérateurs binaires de la calculatrice
-
-boucle:
-    FOR ID '['NUMBER','NUMBER']' '+'NUMBER ':' code END{
+    valeur '=''=' valeur{
 
     }
-    |FOR ID '['NUMBER','NUMBER']' '-'NUMBER ':' code END{
+    |valeur '<''=' valeur{
 
+    }
+    |valeur '>''=' valeur{
+
+    }
+    |valeur '!''=' valeur{
+
+    }
+    |TRUE
+    |FALSE
+
+boucle:
+    FOR {std::cout<<"ox";} ID {std::cout<<"ox";} '['NUMBER','NUMBER']' operation_for ':' code END{
+
+    }
+
+operation_for:
+    '+'NUMBER{
+
+    }
+    |'-'NUMBER{
+    
     }
 
 meta_donnees:
@@ -178,18 +199,32 @@ meta_donnees:
             std::cerr << "#-> " << err.what() << std::endl;
         }
     }
-    | STYLE '(' PAGE ')' style{
+    | STYLE '(' PAGE ')' {std::cout<<"Style sur une page";}'[' atributs_nl ']'
+    | STYLE '(' PARA ')' {std::cout<<"Style sur un paragrahpe";}'[' atributs_nl ']'
+    | STYLE '(' TITR ')' {std::cout<<"Style sur un titre";}'[' atributs_nl ']'
 
+var_bloc:
+    TITRE selecteur {
+        std::cout<<"un bloc par selection d'un titre";
     }
-    | STYLE '(' PARA ')' style{
-        
+    | PARAGRAPH selecteur {
+        std::cout<<"un bloc par selection d'un paragragphe";
+    } 
+    | IMAGE  selecteur {
+        std::cout<<"un bloc par selection d'une image";
     }
-    | STYLE '(' TITR ')' style{
-        
+    /*|bloc {
+        std::cout<<" pure";
+    }*/
+
+
+selecteur:
+    '[' valeur ']'{
+
     }
 
 bloc:
-    TITRE objet{
+    TITRE objet surcharge{
         std::cout<<"Titre "<<std::to_string($1)<<" : "<<$2<< std::endl;
     }
     | PARAGRAPH objet{
@@ -199,66 +234,95 @@ bloc:
         std::cout<<"Image "<<" : "<<$2<< std::endl;
     }
 
+surcharge:
+    
+    |valeur
+
 objet:
     texte{
         $$=$1->calculer();
     }
-    |  style texte{
-        $$=$2->calculer();
+    |  '[' atributs_virgules ']' texte{
+        $$=$4->calculer();
     }
 
-style:
-    '['atributs']' {
+//----------------------------------------------------------------------------------------------------------------
+//Types de Données :
 
-}
+identite:
+    ID {std::cout<<"une variable";}
+    |var_bloc '.' VAR_STYLE{std::cout<<"le style d'un blc";}
+    |var_bloc '.' HEIGHT{std::cout<<"la hauteur d'un bloc";}
+    |var_bloc '.' WIDTH{std::cout<<"la largeur d'un bloc";}
+    |var_bloc '.' TEXTCOLOR{std::cout<<"la couleur de texte d'un bloc";}
+    |var_bloc '.' BACKGROUNDCOLOR{std::cout<<"la couleur de fond d'un bloc";}
+    |var_bloc '.' OPACITY{std::cout<<"l'opacité d'une variable";}
+    |ID '.' VAR_STYLE{std::cout<<"le style d'une variable";}
+    |ID '.' HEIGHT{std::cout<<"la hauteur d'une variable";}
+    |ID '.' WIDTH{std::cout<<"la largeur d'une variable";}
+    |ID '.' TEXTCOLOR{std::cout<<"la couleur de texte d'une variable";}
+    |ID '.' BACKGROUNDCOLOR{std::cout<<"la couleur de fond d'une variable";}
+    |ID '.' OPACITY{std::cout<<"l'opacité d'une variable";}
 
-atributs:
-    atribut','atributs{
+valeur:
+    var_bloc
+    |identite
+    |NUMBER{std::cout<<"un nombre";}
+    |couleur{std::cout<<"une couleur";}
+    |'[' atributs_virgules ']'{std::cout<<"un style";}
+    |taille
+    |ratio
+    |valeur '+' valeur
+    |valeur '-' valeur
+    |valeur '*' valeur
+    |valeur '/' valeur
+
+atributs_virgules:
+    atribut ',' atributs_virgules{
 
     }
     | atribut
 
-atribut:
-    HEIGHT ':' taille{
+atributs_nl:
+    atribut NL atributs_nl{//fonctione pour detecter les différents retours à la ligne, mais me parait peu élégant cepandant.
 
     }
-    | WIDTH ':' taille{
+    |atribut  
+    |NL atributs_nl
+    |
+
+atribut:
+    HEIGHT ':' valeur{
+
+    }
+    | WIDTH ':' valeur{
         
     }
-    | TEXTCOLOR ':' couleur{
+    | TEXTCOLOR ':' valeur{
         
     }
-    | BACKGROUNDCOLOR ':' couleur{
+    | BACKGROUNDCOLOR ':' valeur{
         
     }
-    | OPACITY ':' ratio{
+    | OPACITY ':'  valeur{
         
     }
 
 taille:
-    NUMBER{
-        $$=$1;
-    }
-    | NUMBER'p'{
+     NUMBER'p'{
         $$=$1;
     }
 
 ratio:
-    NUMBER{
-        $$=$1;
-    }
-    | NUMBER'%'{
+     NUMBER'%'{
         $$=$1;
     }
 
 couleur:
-    /*'#' HEXANUMBER {
-        
-    }*/
     HEXANUMBER {
         
     }
-    |RGB '('NUMBER','NUMBER','NUMBER')'
+    |RGB '('valeur','valeur','valeur')'
 
 texte:
     TEXT {
@@ -275,6 +339,9 @@ commentaire:
 
 %%
 
+
+//----------------------------------------------------------------------------------------------------------------
+//Erreur :
 void yy::Parser::error( const location_type &l, const std::string & err_msg) {
     std::cerr << "Erreur : " << l << ", " << err_msg << std::endl;
 }

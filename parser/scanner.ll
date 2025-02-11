@@ -35,8 +35,11 @@ using token = yy::Parser::token;
 "[" return '[';
 "]" return ']';
 "=" return '=';
+"<" return '<';
+">" return '>';
 "," return ',';
 ":" return ':';
+"." return '.';
 "px" return 'p';
 "%" return '%';
 "&&" return '&';
@@ -95,13 +98,16 @@ langue {
     return token::LANG;
 }
 
-
 icone {
     return token::ICON;
 }
 
 css {
     return token::CSS;
+}
+
+style {
+    return token::VAR_STYLE;
 }
 
 largeur {
@@ -157,6 +163,14 @@ FINI {
     return token::END;
 }
 
+true {
+    return token::TRUE;
+}
+
+false {
+    return token::FALSE;
+}
+
 \%\%.* {
     yylval->build<std::string>(YYText());
     return token::COMMENTAIRE;
@@ -167,7 +181,7 @@ FINI {
     return token::COMMENTAIRE;
 }
 
-[a-z][a-zA-Z0-9]+ {
+[a-z][a-zA-Z0-9]* {
     yylval->build<std::string>(YYText());
     return token::ID;
 }
