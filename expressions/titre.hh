@@ -12,5 +12,4 @@ class Titre : public Bloc {
     private:
     int _niv;
     
-    Text _text;
 };
