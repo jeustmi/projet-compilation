@@ -73,6 +73,7 @@
 %type <std::string> objet
 //%type <ExpressionPtr> commentaire
 %type <std::string> texte
+%type <std::shared_ptr<Attribut>> atribut 
 %type <int> taille
 %type <int> ratio
 %left '-' '+'
@@ -223,6 +224,7 @@ selecteur:
 bloc:
     TITRE objet surcharge{
         std::cout<<"Titre "<<std::to_string($1)<<" : "<<$2<< std::endl;
+        //$$=std::make_shared<Titre>("feur"/*$3.calculer()*/);
     }
     | PARAGRAPH objet{
         std::cout<<"Paragraphe "<<" : "<<$2<< std::endl;
@@ -276,9 +278,14 @@ valeur:
 
 atributs_virgules:
     atribut ',' atributs_virgules{
-    
+        //$3.push_back($1);
+        //$$=$3;
     }
-    | atribut
+    | atribut {
+        //
+        //
+        //$$=std::vector<std::shared_ptr<Attribut>>($1)
+    }
 
 atributs_nl:
     atribut NL atributs_nl{//fonctione pour detecter les différents retours à la ligne, mais me parait peu élégant cepandant.
@@ -290,10 +297,10 @@ atributs_nl:
 
 atribut:
     HEIGHT ':' valeur{
-
+        $$=std::make_shared<Hauteur>("feur"/*$3.calculer()*/);
     }
     | WIDTH ':' valeur{
-        
+        //instazncie batar
     }
     | TEXTCOLOR ':' valeur{
         

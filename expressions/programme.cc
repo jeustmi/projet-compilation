@@ -27,6 +27,10 @@ void Programme::creation_page() {
         _page+=e.calculer();
     }
 
+    for(auto e : _insts){
+        //_page+=e.calculer();
+    }
+
     _page.decTab();
     _page+="</body>";
     
