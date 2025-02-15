@@ -16,10 +16,12 @@
 
     class Scanner;
     class Driver;
+    class Programme;
 }
 
 %parse-param { Scanner &scanner }
 %parse-param { Driver &driver }
+%parse-param { Programme &prog }
 
 %code{
     #include <iostream>
@@ -30,7 +32,6 @@
 
     #undef  yylex
     #define yylex scanner.yylex
-    Programme prog;
 }
 
 %token                  NL
@@ -70,10 +71,11 @@
 
 
 
-%type <std::string> objet
-//%type <ExpressionPtr> commentaire
+%type <std::shared_ptr<Bloc>> bloc
 %type <std::string> texte
 %type <std::shared_ptr<Attribut>> atribut 
+%type <std::vector<std::shared_ptr<Attribut>>>  atributs_virgules
+%type <objet> objet
 %type <int> taille
 %type <int> ratio
 %left '-' '+'
@@ -86,7 +88,7 @@
 
 programme:
     code{
-        prog.creation_page();
+        //prog.creation_page();
         YYACCEPT;
     }
 
@@ -110,7 +112,8 @@ instruction:
 
     }
     |bloc{
-
+        //std::cout<<"uiuiuiui\n";
+        prog.addBloc($1);
     }
     |meta_donnees{
         
@@ -223,14 +226,16 @@ selecteur:
 
 bloc:
     TITRE objet surcharge{
-        std::cout<<"Titre "<<std::to_string($1)<<" : "<<$2<< std::endl;
-        //$$=std::make_shared<Titre>("feur"/*$3.calculer()*/);
+        std::cout<<"Titre "<<std::to_string($1)<<" : "<<$2.text<< std::endl;
+        $$=std::make_shared<Titre>($2.attr,$2.text,$1/*$3.calculer()*/);
     }
     | PARAGRAPH objet{
-        std::cout<<"Paragraphe "<<" : "<<$2<< std::endl;
+        std::cout<<"Paragraphe "<<" : "<<$2.text<< std::endl;
+        $$=std::make_shared<Paragraphe>($2.attr,$2.text/*$3.calculer()*/);
     }
     | IMAGE objet{
-        std::cout<<"Image "<<" : "<<$2<< std::endl;
+        std::cout<<"Image "<<" : "<<$2.text<< std::endl;
+        $$=std::make_shared<Image>($2.attr,$2.text/*$3.calculer()*/);
     }
 
 surcharge:
@@ -239,10 +244,12 @@ surcharge:
 
 objet:
     texte{
-        $$=$1;
+        $$.attr=std::vector<std::shared_ptr<Attribut>>();
+        $$.text=$1;
     }
     |  '[' atributs_virgules ']' texte{
-        $$=$4;
+        $$.attr=$2;
+        $$.text=$4;
     }
 
 //----------------------------------------------------------------------------------------------------------------
@@ -278,14 +285,16 @@ valeur:
 
 atributs_virgules:
     atribut ',' atributs_virgules{
-        //$3.push_back($1);
-        //$$=$3;
+        $3.push_back($1);
+        $$=$3;
     }
     | atribut {
-        //
-        //
-        //$$=std::vector<std::shared_ptr<Attribut>>($1)
+        std::vector<std::shared_ptr<Attribut>> a;
+        a.push_back($1);
+        $$=a;
     }
+    //!T [couleurTexte : rgb(255,0,0)] 'Ceci est un long texte'
+    //!T 'Ceci est un long texte'
 
 atributs_nl:
     atribut NL atributs_nl{//fonctione pour detecter les différents retours à la ligne, mais me parait peu élégant cepandant.
@@ -300,16 +309,16 @@ atribut:
         $$=std::make_shared<Hauteur>("feur"/*$3.calculer()*/);
     }
     | WIDTH ':' valeur{
-        //instazncie batar
+        $$=std::make_shared<Largeur>("feur"/*$3.calculer()*/);
     }
     | TEXTCOLOR ':' valeur{
-        
+        $$=std::make_shared<CouleurTexte>("feur"/*$3.calculer()*/);
     }
     | BACKGROUNDCOLOR ':' valeur{
-        
+        $$=std::make_shared<CouleurFond>("feur"/*$3.calculer()*/);
     }
     | OPACITY ':'  valeur{
-        
+        $$=std::make_shared<Opacite>("feur"/*$3.calculer()*/);
     }
 
 taille:

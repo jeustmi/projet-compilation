@@ -1,3 +1,5 @@
+// supprimer
+
 #pragma once
 
 #include "text.hh"

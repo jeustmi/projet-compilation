@@ -65,7 +65,7 @@ using token = yy::Parser::token;
 
 \!T+ {
 yylval->build<int>(YYLeng()-1);
-return token::TITRE;
+    return token::TITRE;
 }
 
 \'([^']|\\\')*\' {
@@ -83,11 +83,11 @@ rgb {
 }
 
 \!P {
-return token::PARAGRAPH;
+    return token::PARAGRAPH;
 }
 
 \!I {
-return token::IMAGE;
+    return token::IMAGE;
 }
 
 encodage {

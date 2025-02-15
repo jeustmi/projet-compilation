@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-void Programme::creation_page() {
+std::string Programme::creation_page() {
     _page+="<!DOCTYPE html>";
 
     _page+="<html lang=\""+_defs._langue+"\">";
@@ -23,12 +23,12 @@ void Programme::creation_page() {
     _page+="<body>";
     _page.incTab();
 
-    for(auto e : _comms){
-        _page+=e.calculer();
+    for(auto c : _comms){
+        _page+=c.calculer();
     }
 
-    for(auto e : _insts){
-        //_page+=e.calculer();
+    for(auto b : _insts){
+        _page+=b->calculer();
     }
 
     _page.decTab();
@@ -40,4 +40,5 @@ void Programme::creation_page() {
 
     std::cout<<"-------------------------------------------\n";
     std::cout<<_page.getCode()<<std::endl;
+    return _page.getCode();
 }

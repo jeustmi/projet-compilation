@@ -1,23 +1,20 @@
 #pragma once
 #include "commentaire.hh"
-#include "bloc.hh"
-//#include "definition.hh"
+#include "blocs/bloc.hh"
+#include "blocs/titre.hh"
+#include "blocs/paragraphe.hh"
+#include "blocs/image.hh"
 
 #include <vector>
 #include <memory>
-
-/*using css = Definition;
-using titre = Definition;
-using icone = Definition;
-using encodage = Definition;
-using langue = Definition;*/
 
 class Programme{
     public:
     Programme() = default;
 
-    void creation_page();
+    std::string creation_page();
     void addComm(const Commentaire & c){_comms.push_back(c);}
+    void addBloc(const std::shared_ptr<Bloc> & b){_insts.push_back(b);}
     
     void addCss(const std::string & s){_defs._css.push_back(s);}
     void setTitre(const std::string & s){_defs._titre=s;}
@@ -59,4 +56,9 @@ class Programme{
     } _defs;
     std::vector<Commentaire> _comms;
     std::vector<std::shared_ptr<Bloc>> _insts;
+};
+
+struct objet{
+    std::vector<std::shared_ptr<Attribut>> attr;
+    std::string text;
 };
