@@ -1,4 +1,4 @@
-@DEFINE (encodage) {'ISO-8859-1'}
+@DEFINE (encodage) {'ISO-8859-1 s'}
 %% Utilisation de l'encodage ISO-8859-1 pour faire apparaître des caractères erronés
 @DEFINE (icone) {'rick.ico'}
 %%%
@@ -25,7 +25,7 @@ sur trois lignes'
 couleurTexte : rgb(100,255,100)
 couleurFond : #000000
 ]
-!T 'Premier Titre'
+!T 'Premier Titre\' qlizefh\''
 !TT 'Premier sous-titre'
 !T 'Deuxième Titre'
 

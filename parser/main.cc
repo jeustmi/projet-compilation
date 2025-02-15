@@ -15,10 +15,9 @@ int main( int  argc, char* argv[]) {
 
     parser->parse();
 
-    std::ofstream fic("html.html");
+    std::ofstream fic("page.html");
     if(fic){
         fic<<programme->creation_page();
-        std::cout<<"feur";
     }
 
 

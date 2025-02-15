@@ -17,7 +17,7 @@ std::string Bloc::calculer() const {
         ret+="</"+type()+">";
     }
     else{
-        ret=+" src=\""+_text+"\">";
+        ret+=" src=\""+_text+"\">";
     }
     return ret;
 }

@@ -15,7 +15,7 @@ std::string Programme::creation_page() {
     if(_defs._icone!=""){
         _page+="<link rel=\"icon\" type=\"image/jpg\" href=\""+_defs._icone+"\" />";
     }
-    _page+="<titre>"+_defs._titre+"</titre>";
+    _page+="<title>"+_defs._titre+"</title>";
 
     _page.decTab();
     _page+="</head>";
