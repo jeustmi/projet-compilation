@@ -6,7 +6,7 @@
 
 class ExpressionCouleur {
 public:
-    virtual std::string calculer(const Contexte & contexte) = 0;
+    virtual std::string calculer(const Contexte & contexte) const= 0;
 };
 
 using ExpressionCouleurPtr = std::shared_ptr<ExpressionCouleur>;
