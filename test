@@ -51,3 +51,8 @@ bloc.couleurFond = couleur1
 style1 = [couleurFond : couleur2]
 bloc = !P[indice-1]
 bloc.style = style1
+
+@STYLE ( titre1 ) [
+couleurTexte : rgb(100,255,100)
+couleurFond : #000000
+]

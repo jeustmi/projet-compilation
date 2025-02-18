@@ -4,6 +4,7 @@
 #include "blocs/titre.hh"
 #include "blocs/paragraphe.hh"
 #include "blocs/image.hh"
+#include "blocs/style.hh"
 
 #include <vector>
 #include <memory>
@@ -21,6 +22,8 @@ class Programme{
     void setIcone(const std::string & s){_defs._icone=s;}
     void setEncodage(const std::string & s){_defs._encodage=s;}
     void setLangue(const std::string & s){_defs._langue=s;}
+
+    void addStyle(Style const & s){_styles.push_back(s);}
 
     class Page{
         public:
@@ -56,6 +59,7 @@ class Programme{
     } _defs;
     std::vector<Commentaire> _comms;
     std::vector<std::shared_ptr<Bloc>> _insts;
+    std::vector<Style> _styles;
 };
 
 struct objet{
