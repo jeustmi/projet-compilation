@@ -13,6 +13,8 @@
     #include "text.hh"
     #include "commentaire.hh"
     #include "programme.hh"
+    #include "constante.hh"
+    #include "variable.hh"
 
     class Scanner;
     class Driver;
@@ -167,7 +169,7 @@ booleen://fonctionnera probablement comme les opérateurs binaires de la calcula
     |FALSE
 
 boucle:
-    FOR {std::cout<<"ox";} ID {std::cout<<"ox";} '['NUMBER','NUMBER']' operation_for ':' code END{
+    FOR  ID '['NUMBER','NUMBER']' operation_for ':' code END{
 
     }
 
@@ -225,7 +227,14 @@ selecteur:
     }
 
 bloc:
-    TITRE objet surcharge{
+    TITRE objet{
+        std::cout<<"Titre "<<std::to_string($1)<<" : "<<$2.text<< std::endl;
+        $$=std::make_shared<Titre>($2.attr,$2.text,$1/*$3.calculer()*/);
+    }
+    |TITRE objet valeur{// pour plus d'infos sur la couleur :https://en.wikipedia.org/wiki/ANSI_escape_code#Select_Graphic_Rendition_parameters
+        if($1!=1){
+            std::cout<<"\033[;33mWarning : number behind title definition overrides a level that isn't 1 (default value).\033[0m\n";
+        }
         std::cout<<"Titre "<<std::to_string($1)<<" : "<<$2.text<< std::endl;
         $$=std::make_shared<Titre>($2.attr,$2.text,$1/*$3.calculer()*/);
     }
@@ -237,10 +246,6 @@ bloc:
         std::cout<<"Image "<<" : "<<$2.text<< std::endl;
         $$=std::make_shared<Image>($2.attr,$2.text/*$3.calculer()*/);
     }
-
-surcharge:
-    
-    |valeur
 
 objet:
     texte{

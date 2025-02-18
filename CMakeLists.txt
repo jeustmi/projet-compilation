@@ -21,6 +21,8 @@ file(GLOB EXPRESSION_HEADERS
     expressions/programme.hh
     expressions/blocs/bloc.hh
     expressions/attributs/attribut.hh
+    expressions/entiers/constante.hh
+    expressions/entiers/variable.hh
 
     )
 
@@ -31,6 +33,8 @@ add_library(expressions
     expressions/programme.cc
     expressions/blocs/bloc.cc
     expressions/attributs/attribut.cc
+    expressions/entiers/constante.cc
+    expressions/entiers/variable.cc
     ${EXPRESSION_HEADERS}
     )
 
