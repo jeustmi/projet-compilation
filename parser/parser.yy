@@ -13,8 +13,8 @@
     #include "text.hh"
     #include "commentaire.hh"
     #include "programme.hh"
-    #include "entiers/constante.hh"
-    #include "entiers/variable.hh"
+    #include "constante.hh"
+    #include "variable.hh"
 
     class Scanner;
     class Driver;
@@ -74,6 +74,8 @@
 
 
 %type <std::shared_ptr<Bloc>> bloc
+%type <std::shared_ptr<Expression>> valeur
+%type <std::string> identite
 %type <std::string> texte
 %type <std::shared_ptr<Attribut>> atribut 
 %type <std::vector<std::shared_ptr<Attribut>>>  atributs_virgules
@@ -129,8 +131,14 @@ instruction:
     }
 
 declaration:
-    identite  '=' {std::cout<<" est affecté à ";} valeur{
-        std::cout<<std::endl;
+    identite  '=' valeur{
+        try {
+        std::string val = $3->calculer(driver.getContexte());
+        driver.setVariable($1, val);
+        std::cout << "#-> " << $1 << " = " << val << std::endl;
+        } catch(const std::exception& err) {
+            std::cerr << "#-> " << err.what() << std::endl;
+        }
     }
 
 conditionelle:
@@ -278,8 +286,10 @@ objet:
 //Types de Données :
 
 identite:
-    ID {std::cout<<"une variable";}
-    |var_bloc '.' VAR_STYLE{std::cout<<"le style d'un blc";}
+    ID {
+        $$ = $1;
+    }
+    /*|var_bloc '.' VAR_STYLE{std::cout<<"le style d'un blc";}
     |var_bloc '.' HEIGHT{std::cout<<"la hauteur d'un bloc";}
     |var_bloc '.' WIDTH{std::cout<<"la largeur d'un bloc";}
     |var_bloc '.' TEXTCOLOR{std::cout<<"la couleur de texte d'un bloc";}
@@ -290,20 +300,63 @@ identite:
     |ID '.' WIDTH{std::cout<<"la largeur d'une variable";}
     |ID '.' TEXTCOLOR{std::cout<<"la couleur de texte d'une variable";}
     |ID '.' BACKGROUNDCOLOR{std::cout<<"la couleur de fond d'une variable";}
-    |ID '.' OPACITY{std::cout<<"l'opacité d'une variable";}
+    |ID '.' OPACITY{std::cout<<"l'opacité d'une variable";}*/
 
 valeur:
-    var_bloc
-    |identite
-    |NUMBER{std::cout<<"un nombre";}
-    |couleur{std::cout<<"une couleur";}
-    |'[' atributs_virgules ']'{std::cout<<"un style";}
+    /*var_bloc
+    |*/identite{
+        $$=std::make_shared<Variable>($1);
+    }
+    |NUMBER{
+        $$ = std::make_shared<Constante>($1);
+    }
+    /*|couleur{
+        
+    }
+    |'[' atributs_virgules ']'{
+    
+    }
     |taille
-    |ratio
-    |valeur '+' valeur
+    |ratio*/
+    |valeur '+' valeur{
+        try {
+        int val1 = $1->toint(driver.getContexte());
+        int val2 = $3->toint(driver.getContexte());
+        $$=std::make_shared<Constante>(val1+val2);
+        } catch(const std::exception& err) {
+            std::cerr << "#-> " << err.what() << std::endl;
+        }
+    }
     |valeur '-' valeur
+    {
+        try {
+        int val1 = $1->toint(driver.getContexte());
+        int val2 = $3->toint(driver.getContexte());
+        $$=std::make_shared<Constante>(val1-val2);
+        } catch(const std::exception& err) {
+            std::cerr << "#-> " << err.what() << std::endl;
+        }
+    }
     |valeur '*' valeur
+    {
+        try {
+        int val1 = $1->toint(driver.getContexte());
+        int val2 = $3->toint(driver.getContexte());
+        $$=std::make_shared<Constante>(val1*val2);
+        } catch(const std::exception& err) {
+            std::cerr << "#-> " << err.what() << std::endl;
+        }
+    }
     |valeur '/' valeur
+    {
+        try {
+        int val1 = $1->toint(driver.getContexte());
+        int val2 = $3->toint(driver.getContexte());
+        $$=std::make_shared<Constante>(val1/val2);
+        } catch(const std::exception& err) {
+            std::cerr << "#-> " << err.what() << std::endl;
+        }
+    }
 
 atributs_virgules:
     atribut ',' atributs_virgules{
