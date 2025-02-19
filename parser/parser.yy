@@ -13,8 +13,8 @@
     #include "text.hh"
     #include "commentaire.hh"
     #include "programme.hh"
-    #include "constante.hh"
-    #include "variable.hh"
+    #include "entiers/constante.hh"
+    #include "entiers/variable.hh"
 
     class Scanner;
     class Driver;
@@ -77,6 +77,7 @@
 %type <std::string> texte
 %type <std::shared_ptr<Attribut>> atribut 
 %type <std::vector<std::shared_ptr<Attribut>>>  atributs_virgules
+%type <std::vector<std::shared_ptr<Attribut>>>  atributs_nl
 %type <objet> objet
 %type <int> taille
 %type <int> ratio
@@ -202,9 +203,25 @@ meta_donnees:
         std::cout<<"Titre "<<" : "<<$2<< std::endl;
         prog.setTitre($2);
     }
-    | STYLE '(' PAGE ')' {std::cout<<"Style sur une page";}'[' atributs_nl ']'
-    | STYLE '(' PARA ')' {std::cout<<"Style sur un paragrahpe";}'[' atributs_nl ']'
-    | STYLE '(' TITR ')' {std::cout<<"Style sur un titre";}'[' atributs_nl ']'
+    | STYLE '(' PAGE ')' {std::cout<<"Style sur une page";} '[' atributs_nl ']' {
+        prog.addStyle(Style($7,"all"));
+        //std::cout<<"feur";
+    }
+    | STYLE '(' PARA ')' {std::cout<<"Style sur un paragrahpe";}'[' atributs_nl ']' {
+        prog.addStyle(Style($7,"p"));
+    }
+    | STYLE '(' TITR ')' {std::cout<<"Style sur un titre";}'[' atributs_nl ']' {
+        prog.addStyle(Style($7,"h"+std::to_string($3)));
+    }
+     /*@STYLE ( titre1 ) [
+couleurTexte : rgb(100,255,100)
+couleurFond : #000000
+]*/
+/*@STYLE ( page ) [
+couleurTexte : rgb(100,255,100)
+]*/
+/*@STYLE ( page ) [
+]*/
 
 var_bloc:
     TITRE selecteur {
@@ -302,12 +319,24 @@ atributs_virgules:
     //!T 'Ceci est un long texte'
 
 atributs_nl:
-    atribut NL atributs_nl{//fonctione pour detecter les différents retours à la ligne, mais me parait peu élégant cepandant.
-
+    NL atributs_nl {
+        $$=$2;
     }
-    |atribut  
-    |NL atributs_nl
-    |
+    |atribut NL atributs_nl {//fonctione pour detecter les différents retours à la ligne, mais me parait peu élégant cepandant.
+        $3.push_back($1);
+        $$=$3;
+    }
+    |atribut {
+        std::vector<std::shared_ptr<Attribut>> a;
+        a.push_back($1);
+        $$=a;
+    }
+    |atribut NL {
+        std::vector<std::shared_ptr<Attribut>> a;
+        a.push_back($1);
+        $$=a;
+    }
+    // |
 
 atribut:
     HEIGHT ':' valeur{
