@@ -76,13 +76,15 @@
 %type <std::shared_ptr<Bloc>> bloc
 %type <std::shared_ptr<Expression>> valeur
 %type <std::string> identite
+%type <std::string> couleur
 %type <std::string> texte
 %type <std::shared_ptr<Attribut>> atribut 
 %type <std::vector<std::shared_ptr<Attribut>>>  atributs_virgules
 %type <std::vector<std::shared_ptr<Attribut>>>  atributs_nl
 %type <objet> objet
-%type <int> taille
-%type <int> ratio
+%type <std::string> taille
+%type <std::string> ratio
+%type <int> selecteur
 %left '-' '+'
 %left '*' '/'
 
@@ -135,9 +137,9 @@ declaration:
         try {
         std::string val = $3->calculer(driver.getContexte());
         driver.setVariable($1, val);
-        std::cout << "#-> " << $1 << " = " << val << std::endl;
+        std::cout << "#=-> " << $1 << " = " << val << std::endl;
         } catch(const std::exception& err) {
-            std::cerr << "#-> " << err.what() << std::endl;
+            std::cerr << "#!-> " << err.what() << std::endl;
         }
     }
 
@@ -241,14 +243,19 @@ var_bloc:
     | IMAGE  selecteur {
         std::cout<<"un bloc par selection d'une image";
     }
-    /*|bloc {
-        std::cout<<" pure";
-    }*/
+    |bloc {
+        std::cout<<" pur";
+    }
 
 
 selecteur:
     '[' valeur ']'{
-
+        try {
+        int val1 = $2->toint(driver.getContexte());
+        $$=std::make_shared<Constante>(val1);
+        } catch(const std::exception& err) {
+            std::cerr << "#-> " << err.what() << std::endl;
+        }
     }
 
 bloc:
@@ -310,18 +317,23 @@ valeur:
     |NUMBER{
         $$ = std::make_shared<Constante>($1);
     }
-    /*|couleur{
-        
+    |couleur{
+        $$ = std::make_shared<Constante>($1);
     }
-    |'[' atributs_virgules ']'{
+    /*|'[' atributs_virgules ']'{
     
+    }*/
+    |taille{
+        $$ = std::make_shared<Constante>($1);
     }
-    |taille
-    |ratio*/
-    |valeur '+' valeur{
+    |ratio{
+        $$ = std::make_shared<Constante>($1);
+    }
+    |valeur '+' valeur{//TODO: les valeurs n'etant pas des nombres sont transformées en 0. Peut être faire une erreur plutôt.
         try {
         int val1 = $1->toint(driver.getContexte());
         int val2 = $3->toint(driver.getContexte());
+        //std::cout<<" avl2 = "<<std::to_string(val2)<<std::endl;
         $$=std::make_shared<Constante>(val1+val2);
         } catch(const std::exception& err) {
             std::cerr << "#-> " << err.what() << std::endl;
@@ -410,19 +422,29 @@ atribut:
 
 taille:
      NUMBER'p'{
-        $$=$1;
+        $$=std::to_string($1)+"px";
     }
 
 ratio:
      NUMBER'%'{
-        $$=$1;
+        $$=$$=std::to_string($1)+"%";;
     }
 
 couleur:
     HEXANUMBER {
+        $$=$1;
+    }
+    |RGB '(' valeur ',' valeur ',' valeur ')'{
+        try {
+        std::string val1 = $3->calculer(driver.getContexte());
+        std::string val2 = $5->calculer(driver.getContexte());
+        std::string val3 = $7->calculer(driver.getContexte());
+        $$="rgb ("+val1+","+val2+","+val3+")";
+        } catch(const std::exception& err) {
+            std::cerr << "#-> " << err.what() << std::endl;
+        }
         
     }
-    |RGB '('valeur','valeur','valeur')'
 
 texte:
     TEXT {
