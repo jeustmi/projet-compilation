@@ -25,6 +25,10 @@ class Programme{
 
     void addStyle(Style const & s){_styles.push_back(s);}
 
+    std::shared_ptr<Titre> getTitre(int i);
+    std::shared_ptr<Paragraphe> getParagraphe(int i);
+    std::shared_ptr<Image> getImage(int i);
+
     class Page{
         public:
         Page() = default;

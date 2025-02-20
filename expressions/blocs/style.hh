@@ -1,3 +1,4 @@
+#pragma once
 #include "bloc.hh"
 
 class Style : public Bloc {

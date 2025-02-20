@@ -15,14 +15,18 @@ find_package(FLEX)
 include_directories(parser expressions ${CMAKE_CURRENT_BINARY_DIR})
 file(GLOB EXPRESSION_HEADERS 
     expressions/contexte.hh
-    expressions/expression.hh
+    expressions/variables/expression.hh
     expressions/text.hh
     expressions/commentaire.hh
     expressions/programme.hh
     expressions/blocs/bloc.hh
     expressions/attributs/attribut.hh
-    expressions/constante.hh
-    expressions/variable.hh
+    expressions/variables/constanteint.hh
+    expressions/variables/variableint.hh
+    expressions/variables/constantecouleur.hh
+    expressions/variables/variablecouleur.hh
+    expressions/variables/constantestyle.hh
+    expressions/variables/variablestyle.hh
 
     )
 
@@ -33,8 +37,12 @@ add_library(expressions
     expressions/programme.cc
     expressions/blocs/bloc.cc
     expressions/attributs/attribut.cc
-    expressions/constante.cc
-    expressions/variable.cc
+    expressions/variables/constanteint.cc
+    expressions/variables/variableint.cc
+    expressions/variables/constantecouleur.cc
+    expressions/variables/variablecouleur.cc
+    expressions/variables/constantestyle.cc
+    expressions/variables/variablestyle.cc
     ${EXPRESSION_HEADERS}
     )
 
