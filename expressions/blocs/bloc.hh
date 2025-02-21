@@ -6,11 +6,13 @@
 #include "../attributs/couleurFond.hh"
 #include "../attributs/couleurTexte.hh"
 #include "../attributs/opacite.hh"
+#include "../../parser/driver.hh" 
+
 
 #include <vector>
 #include <memory>
-
 class Style;
+
 
 class Bloc{
 
@@ -18,7 +20,7 @@ class Bloc{
     //Bloc(std::string const & text) : _attr(),_text(text) {}
     Bloc(std::vector<std::shared_ptr<Attribut>> const & attr,std::string const & text) : _attr(attr),_text(text) {}
     virtual std::string type() const {return _text;}; 
-    std::string calculer() const;
+    std::string calculer(const Driver & d) const;
     void setAttributs(std::vector<std::shared_ptr<Attribut>> attr) {_attr=attr;}
     void addAttribut(std::shared_ptr<Attribut> attr) {_attr.push_back(attr);}
     private:

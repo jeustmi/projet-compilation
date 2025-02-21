@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-std::string Programme::creation_page() {
+std::string Programme::creation_page(const Driver & d) {
     _page+="<!DOCTYPE html>";
 
     _page+="<html lang=\""+_defs._langue+"\">";
@@ -55,7 +55,7 @@ std::string Programme::creation_page() {
     }
 
     for(auto b : _insts){
-        _page+=b->calculer();
+        _page+=b->calculer(d);
     }
 
     _page.decTab();
@@ -69,6 +69,44 @@ std::string Programme::creation_page() {
     std::cout<<_page.getCode()<<std::endl;
     return _page.getCode();
 }
+
+std::string Programme::calculer(const Driver & d) {
+    for(auto c : _comms){
+        _page+=c.calculer();
+    }
+
+    for( auto s : _styles){
+        if(s.type()=="all"){
+            for(auto b : _insts){
+                b->setAttributs(s.getAttr());
+            }
+        }
+        else{
+            for(auto b : _insts){
+                if(s.type()==b->type()){
+                    b->setAttributs(s.getAttr());
+                }
+                /*if(s.type()=="p"){
+
+                }
+                else if(s.type()[0]=='h'){
+                    for(int i = 0; i<10; ++i){
+                        if(s.type()=="h"+std::to_string(i)){
+                            
+                        }
+                    }
+                }*/
+            }
+        }
+        
+    }
+
+    for(auto b : _insts){
+        _page+=b->calculer(d);
+    }
+    return _page.getCode();
+}
+
 
 
 std::shared_ptr<Titre> Programme::getTitre(int i){

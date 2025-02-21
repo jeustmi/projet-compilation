@@ -1,10 +1,15 @@
 #pragma once
 
 #include <string>
+#include <vector>
+#include <memory>
 
 #include "contexte.hh"
-#include "../expressions/blocs/bloc.hh"
-#include "../expressions/blocs/style.hh"
+
+class Bloc;
+class Style;
+class Attribut;
+
 
 class Driver {
 private:

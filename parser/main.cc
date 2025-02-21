@@ -17,7 +17,7 @@ int main( int  argc, char* argv[]) {
 
     std::ofstream fic("page.html");
     if(fic){
-        fic<<programme->creation_page();
+        fic<<programme->creation_page(*driver);
     }
 
 

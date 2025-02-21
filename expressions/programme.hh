@@ -1,6 +1,7 @@
 #pragma once
 #include "commentaire.hh"
-#include "blocs/bloc.hh"
+#include "driver.hh"
+#include "../parser/driver.hh"
 #include "blocs/titre.hh"
 #include "blocs/paragraphe.hh"
 #include "blocs/image.hh"
@@ -13,7 +14,8 @@ class Programme{
     public:
     Programme() = default;
 
-    std::string creation_page();
+    std::string creation_page(const Driver & d);
+    std::string calculer(const Driver & d);
     void addComm(const Commentaire & c){_comms.push_back(c);}
     void addBloc(const std::shared_ptr<Bloc> & b){_insts.push_back(b);}
     
