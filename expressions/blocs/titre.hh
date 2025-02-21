@@ -1,7 +1,7 @@
 #pragma once
 
 #include "bloc.hh"
-#include "attributs/attribut.hh"
+#include "../attributs/attribut.hh"
 
 #include <vector>
 

@@ -21,12 +21,8 @@ file(GLOB EXPRESSION_HEADERS
     expressions/programme.hh
     expressions/blocs/bloc.hh
     expressions/attributs/attribut.hh
-    expressions/variables/constanteint.hh
-    expressions/variables/variableint.hh
-    expressions/variables/constantecouleur.hh
-    expressions/variables/variablecouleur.hh
-    expressions/variables/constantestyle.hh
-    expressions/variables/variablestyle.hh
+    expressions/variables/constante.hh
+    expressions/variables/variable.hh
 
     )
 

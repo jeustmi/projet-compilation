@@ -14,14 +14,16 @@
     #include "commentaire.hh"
     #include "programme.hh"
 
-    #include "variables/constanteint.hh"
+    #include "variables/constante.hh"
+    #include "variables/variable.hh"
+    /*#include "variables/constanteint.hh"
     #include "variables/variableint.hh"
     #include "variables/constantecouleur.hh"
     #include "variables/variablecouleur.hh"
     #include "variables/constantebloc.hh"
     #include "variables/variablebloc.hh"
     #include "variables/constantestyle.hh"
-    #include "variables/variablestyle.hh"
+    #include "variables/variablestyle.hh"*/
 
     class Scanner;
     class Driver;
@@ -156,7 +158,7 @@ affectation:
         } catch(const std::exception& err) {
             std::cerr << "#!-> " << err.what() << std::endl;
         }
-    }
+    } 
     |identifiant_int '=' valeurint{
         try {
         std::string val = $3->to_string(driver.getContexteint());
@@ -405,22 +407,22 @@ identifiant_int:
 valeurint:
     /*var_bloc
     |*/ID{
-        $$=std::make_shared<VariableInt>($1);
+        $$=std::make_shared<Variable<int>>($1);
     }
     |NUMBER{
-        $$ = std::make_shared<ConstanteInt>($1);
+        $$ = std::make_shared<Constante<int>>($1);
     }
     /*|couleur{
-        $$ = std::make_shared<ConstanteInt>($1);
+        $$ = std::make_shared<Constante<int>>($1);
     }*/
     /*|'[' atributs_virgules ']'{
     
     }*/
     |taille{
-        $$ = std::make_shared<ConstanteInt>($1,"px");
+        $$ = std::make_shared<Constante<int>>($1,"px");
     }
     |ratio{
-        $$ = std::make_shared<ConstanteInt>($1,"%");
+        $$ = std::make_shared<Constante<int>>($1,"%");
     }
     |valeurint '+' valeurint{//TODO: les valeurs n'etant pas des nombres sont transformées en 0. Peut être faire une erreur plutôt.
         try {
@@ -434,7 +436,7 @@ valeurint:
         else{
             s="%";
         }
-        $$=std::make_shared<ConstanteInt>(val1+val2,s);
+        $$=std::make_shared<Constante<int>>(val1+val2,s);
         } catch(const std::exception& err) {
             std::cerr << "#-> " << err.what() << std::endl;
         }
@@ -451,7 +453,7 @@ valeurint:
         else{
             s="%";
         }
-        $$=std::make_shared<ConstanteInt>(val1-val2,s);
+        $$=std::make_shared<Constante<int>>(val1-val2,s);
         } catch(const std::exception& err) {
             std::cerr << "#-> " << err.what() << std::endl;
         }
@@ -468,7 +470,7 @@ valeurint:
         else{
             s="%";
         }
-        $$=std::make_shared<ConstanteInt>(val1*val2,s);
+        $$=std::make_shared<Constante<int>>(val1*val2,s);
         } catch(const std::exception& err) {
             std::cerr << "#-> " << err.what() << std::endl;
         }
@@ -485,7 +487,7 @@ valeurint:
         else{
             s="%";
         }
-        $$=std::make_shared<ConstanteInt>(val1/val2,s);
+        $$=std::make_shared<Constante<int>>(val1/val2,s);
         } catch(const std::exception& err) {
             std::cerr << "#-> " << err.what() << std::endl;
         }
@@ -515,10 +517,10 @@ identifiant_couleur:
 
 valeurcouleur:
     ID{
-        $$=std::make_shared<VariableCouleur>($1);
+        $$=std::make_shared<Variable<std::string>>($1);
     }
     |couleur{
-        $$ = std::make_shared<ConstanteCouleur>($1);
+        $$ = std::make_shared<Constante<std::string>>($1);
     }
 
 identifiant_style:
@@ -532,10 +534,10 @@ identifiant_style:
 
 valeurstyle:
     ID{
-        $$=std::make_shared<VariableStyle>($1);
+        $$=std::make_shared<Variable<std::vector<std::shared_ptr<Attribut>>>>($1);
     }
     |'[' atributs_nl ']'{
-        $$ = std::make_shared<ConstanteStyle>($2);
+        $$ = std::make_shared<Constante<std::vector<std::shared_ptr<Attribut>>>>($2);
     }
 
 
@@ -543,29 +545,29 @@ valeurstyle:
 // valeur:
 //     /*var_bloc
 //     |*/identite{
-//         $$=std::make_shared<VariableInt>($1);
+//         $$=std::make_shared<Variable<int>>($1);
 //     }
 //     |NUMBER{
-//         $$ = std::make_shared<ConstanteInt>($1);
+//         $$ = std::make_shared<Constante<int>>($1);
 //     }
 //     |couleur{
-//         $$ = std::make_shared<ConstanteInt>($1);
+//         $$ = std::make_shared<Constante<int>>($1);
 //     }
 //     /*|'[' atributs_virgules ']'{
     
 //     }*/
 //     |taille{
-//         $$ = std::make_shared<ConstanteInt>($1);
+//         $$ = std::make_shared<Constante<int>>($1);
 //     }
 //     |ratio{
-//         $$ = std::make_shared<ConstanteInt>($1);
+//         $$ = std::make_shared<Constante<int>>($1);
 //     }
 //     |valeur '+' valeur{//TODO: les valeurs n'etant pas des nombres sont transformées en 0. Peut être faire une erreur plutôt.
 //         try {
 //         int val1 = $1->calculer(driver.getContexteint());
 //         int val2 = $3->calculer(driver.getContexteint());
 //         //std::cout<<" avl2 = "<<std::to_string(val2)<<std::endl;
-//         $$=std::make_shared<ConstanteInt>(val1+val2);
+//         $$=std::make_shared<Constante<int>>(val1+val2);
 //         } catch(const std::exception& err) {
 //             std::cerr << "#-> " << err.what() << std::endl;
 //         }
@@ -575,7 +577,7 @@ valeurstyle:
 //         try {
 //         int val1 = $1->calculer(driver.getContexteint());
 //         int val2 = $3->calculer(driver.getContexteint());
-//         $$=std::make_shared<ConstanteInt>(val1-val2);
+//         $$=std::make_shared<Constante<int>>(val1-val2);
 //         } catch(const std::exception& err) {
 //             std::cerr << "#-> " << err.what() << std::endl;
 //         }
@@ -585,7 +587,7 @@ valeurstyle:
 //         try {
 //         int val1 = $1->calculer(driver.getContexteint());
 //         int val2 = $3->calculer(driver.getContexteint());
-//         $$=std::make_shared<ConstanteInt>(val1*val2);
+//         $$=std::make_shared<Constante<int>>(val1*val2);
 //         } catch(const std::exception& err) {
 //             std::cerr << "#-> " << err.what() << std::endl;
 //         }
@@ -595,7 +597,7 @@ valeurstyle:
 //         try {
 //         int val1 = $1->calculer(driver.getContexteint());
 //         int val2 = $3->calculer(driver.getContexteint());
-//         $$=std::make_shared<ConstanteInt>(val1/val2);
+//         $$=std::make_shared<Constante<int>>(val1/val2);
 //         } catch(const std::exception& err) {
 //             std::cerr << "#-> " << err.what() << std::endl;
 //         }

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "attributs/attribut.hh"
-#include "attributs/hauteur.hh"
-#include "attributs/largeur.hh"
-#include "attributs/couleurFond.hh"
-#include "attributs/couleurTexte.hh"
-#include "attributs/opacite.hh"
+#include "../attributs/attribut.hh"
+#include "../attributs/hauteur.hh"
+#include "../attributs/largeur.hh"
+#include "../attributs/couleurFond.hh"
+#include "../attributs/couleurTexte.hh"
+#include "../attributs/opacite.hh"
 
 #include <vector>
 #include <memory>
