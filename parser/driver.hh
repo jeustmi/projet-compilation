@@ -8,10 +8,10 @@
 
 class Driver {
 private:
-    Contexte<int> _variablesint;
-    Contexte<std::shared_ptr<Bloc>> _variablesbloc;
-    Contexte<std::string> _variablescouleur;
-    Contexte<std::vector<std::shared_ptr<Attribut>>> _variablesstyle;
+    Contexte<int> _variables_int;
+    Contexte<std::shared_ptr<Bloc>> _variables_bloc;
+    Contexte<std::string> _variables_couleur;
+    Contexte<std::vector<std::shared_ptr<Attribut>>> _variables_style;
 
 public:
     Driver() = default;

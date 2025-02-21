@@ -24,7 +24,7 @@ std::string Programme::creation_page() {
     _page.incTab();
 
     for(auto c : _comms){
-        _page+=c.calculer();
+        _page+=c;
     }
 
     for( auto s : _styles){

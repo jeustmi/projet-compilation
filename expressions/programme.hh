@@ -14,7 +14,7 @@ class Programme{
     Programme() = default;
 
     std::string creation_page();
-    void addComm(const Commentaire & c){_comms.push_back(c);}
+    void addComm(const std::string & c){_comms.push_back(c);}
     void addBloc(const std::shared_ptr<Bloc> & b){_insts.push_back(b);}
     
     void addCss(const std::string & s){_defs._css.push_back(s);}
@@ -61,7 +61,7 @@ class Programme{
         std::string _encodage{"utf-8"};
         std::string _langue{"fr"};
     } _defs;
-    std::vector<Commentaire> _comms;
+    std::vector<std::string> _comms;
     std::vector<std::shared_ptr<Bloc>> _insts;
     std::vector<Style> _styles;
 };
