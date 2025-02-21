@@ -92,6 +92,7 @@
 %type <std::shared_ptr<Attribut>> attribut
 
 %type <std::shared_ptr<Bloc>> bloc
+%type <int> operation_for
 
 %type <objet> objet
 
@@ -526,9 +527,6 @@ bloc:
     TITRE objet{
         $$=std::make_shared<Titre>($2.attr,$2.text,$1);
     }
-    |TITRE objet valeur_int{  
-        $$=std::make_shared<Titre>($2.attr,$2.text+std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint()),$1);
-    }
     | PARAGRAPH objet{
         $$=std::make_shared<Paragraphe>($2.attr,$2.text);
     }
@@ -699,16 +697,64 @@ style_comp:
 // Boucles for
 
 boucle:
-    FOR  ID '['NUMBER','NUMBER']' operation_for ':' code END{
-
+    FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc NL END{
+        driver.setVariableint($2, $4);
+        for (int i=$4; i<$6;i=i+$8){
+            prog.addBloc($11);
+        }
+    }
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID NL END{
+        for (int i=$4; i<$6;i=i+$8){
+            driver.setVariableint($2, i);
+            auto nouv = std::make_shared<Titre>($11->getAttributs(),$11->getText(), $11->getNiv());
+            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]);
+            nouv->setText(text);
+            prog.addBloc(nouv);
+        }
+    }
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'/'valeur_int NL END{
+        for (int i=$4; i<$6;i=i+$8){
+            driver.setVariableint($2, i);
+            auto nouv = std::make_shared<Titre>($11->getAttributs(),$11->getText(), $11->getNiv());
+            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]/$14->calculer(driver.getContexteint()));
+            nouv->setText(text);
+            prog.addBloc(nouv);
+        }
+    }
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'-'valeur_int NL END{
+        for (int i=$4; i<$6;i=i+$8){
+            driver.setVariableint($2, i);
+            auto nouv = std::make_shared<Titre>($11->getAttributs(),$11->getText(), $11->getNiv());
+            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]-$14->calculer(driver.getContexteint()));
+            nouv->setText(text);
+            prog.addBloc(nouv);
+        }
+    }
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'+'valeur_int NL END{
+        for (int i=$4; i<$6;i=i+$8){
+            driver.setVariableint($2, i);
+            auto nouv = std::make_shared<Titre>($11->getAttributs(),$11->getText(), $11->getNiv());
+            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]+$14->calculer(driver.getContexteint()));
+            nouv->setText(text);
+            prog.addBloc(nouv);
+        }
+    }
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'*'valeur_int NL END{
+        for (int i=$4; i<$6;i=i+$8){
+            driver.setVariableint($2, i);
+            auto nouv = std::make_shared<Titre>($11->getAttributs(),$11->getText(), $11->getNiv());
+            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]*$14->calculer(driver.getContexteint()));
+            nouv->setText(text);
+            prog.addBloc(nouv);
+        }
     }
 
 operation_for:
     '+'NUMBER{
-
+        $$=+$2;
     }
     |'-'NUMBER{
-    
+        $$=-$2;
     }
    
 //----------------------------------------------------------------------------------------------------------------
