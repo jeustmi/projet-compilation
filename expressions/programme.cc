@@ -72,6 +72,7 @@ std::string Programme::creation_page() {
 
 
 std::shared_ptr<Titre> Programme::getTitre(int i){
+    --i;
     int j=0;
     for(auto b : _insts){
         if(b->type()[0]=='h'){
@@ -87,6 +88,7 @@ std::shared_ptr<Titre> Programme::getTitre(int i){
 }
 
 std::shared_ptr<Paragraphe> Programme::getParagraphe(int i){
+    --i;
     int j=0;
     for(auto b : _insts){
         if(b->type()=="p"){
@@ -102,6 +104,7 @@ std::shared_ptr<Paragraphe> Programme::getParagraphe(int i){
 }
 
 std::shared_ptr<Image> Programme::getImage(int i){
+    --i;
     int j=0;
     for(auto b : _insts){
         if(b->type()=="img"){

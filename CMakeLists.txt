@@ -33,12 +33,6 @@ add_library(expressions
     expressions/programme.cc
     expressions/blocs/bloc.cc
     expressions/attributs/attribut.cc
-    expressions/variables/constanteint.cc
-    expressions/variables/variableint.cc
-    expressions/variables/constantecouleur.cc
-    expressions/variables/variablecouleur.cc
-    expressions/variables/constantestyle.cc
-    expressions/variables/variablestyle.cc
     ${EXPRESSION_HEADERS}
     )
 
