@@ -25,7 +25,7 @@ couleurFond : #000000
 !TT 'Premier sous-titre'
 !T 'Deuxième Titre'%%%
 
-%%%indice = 2 
+indice = 2 
 %% mettre 2 en indice ne permet pas de retrouver la page du prof (les indices commencent bien à 0, cf le sujet n°1)
 couleur1 = #ff0000
 couleur2 = rgb(0,255,0)
@@ -36,7 +36,7 @@ bloc = !P[indice]
 bloc.couleurFond = couleur1
 style1 = [couleurFond : couleur2]
 bloc = !P[indice-1]
-bloc.style = style1%%%
+bloc.style = style1
 
 %%%!T 'Un titre'
 !T[0].couleurFond = #000000

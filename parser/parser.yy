@@ -80,6 +80,11 @@
 
 
 
+//%type <std::vector<std::shared_ptr<Bloc>>> inst
+%type <std::vector<std::shared_ptr<Bloc>>> code_else
+%type <std::shared_ptr<Bloc>> instruction
+%type <std::vector<std::shared_ptr<Bloc>>> boucle
+%type <std::vector<std::shared_ptr<Bloc>>> conditionelle
 %type <std::shared_ptr<Bloc>> bloc
 %type <std::shared_ptr<Bloc>> var_bloc
 %type <std::shared_ptr<Expression<int>>> valeurint
@@ -97,6 +102,8 @@
 %type <int> taille
 %type <int> ratio
 %type <int> selecteur
+%type <bool> condition
+%type <bool> booleen
 %left '-' '+'
 %left '*' '/'
 
@@ -112,6 +119,11 @@ programme:
     }
 
 code:
+    /*inst{
+        for(auto e : $1){
+            prog.addBloc(e);
+        }
+    }*/
     instruction NL code {
 
     }
@@ -121,46 +133,71 @@ code:
     }
     | instruction NL{
     }
+
+/*inst:
+    instruction NL inst{
+        if($1!=nullptr){
+            $3.push_back($1);
+        }
+        $$=$3;
+    }
+    |instruction{
+        std::cout<<($1!=nullptr);
+        std::vector<std::shared_ptr<Bloc>> b;
+        if($1!=nullptr){
+            b.push_back($1);
+        }
+        $$=b;
+    }
+    |instruction NL{
+        std::vector<std::shared_ptr<Bloc>> b;
+        if($1!=nullptr){
+            b.push_back($1);
+        }
+        $$=b;
+    }
+    |conditionelle NL inst{
+        for(auto e : $3){
+            $1.push_back(e);
+        }
+        $$=$1;
+    }
+    |conditionelle{
+        $$=$1;
+    }
+    |boucle{
+        $$=$1;
+    }*/
+
     
 
 instruction:
-    /*conditionelle{
-
-    }
-    |*/boucle{
-
-    }
-    |bloc{
+    bloc{
         //std::cout<<"uiuiuiui\n";
         prog.addBloc($1);
+        $$=$1;
     }
     |meta_donnees{
-        
+
     }
     |commentaire{
+
+    }
+    |declaration{
 
     }
     |affectation{
 
     }
-    |var_bloc{
+    // |var_bloc{
         
-    }
+    // }
 
-affectation:
+declaration:
     ID  '=' valeurint{
         try {
         int val = $3->calculer(driver.getContexteint());
         driver.setVariableint($1, val);
-        std::cout << "#=-> " << $1 << " = " << val << std::endl;
-        } catch(const std::exception& err) {
-            std::cerr << "#!-> " << err.what() << std::endl;
-        }
-    }
-    |identifiant_int '=' valeurint{
-        try {
-        std::string val = $3->to_string(driver.getContexteint());
-        $1->setVal(val);
         std::cout << "#=-> " << $1 << " = " << val << std::endl;
         } catch(const std::exception& err) {
             std::cerr << "#!-> " << err.what() << std::endl;
@@ -182,20 +219,31 @@ affectation:
             std::cerr << "#!-> " << err.what() << std::endl;
         }
     }
-    |identifiant_couleur '=' valeurcouleur{
+    |ID '=' valeurstyle{
         try {
-        std::string val = $3->calculer(driver.getContextecouleur());
+        std::vector<std::shared_ptr<Attribut>> val = $3->calculer(driver.getContextestyle());
+        driver.setVariablestyle($1, val);
+        std::cout << "#=-> " << $1 << " = " << "euh ouais le style" << std::endl;
+        } catch(const std::exception& err) {
+            std::cerr << "#!-> " << err.what() << std::endl;
+        }
+    }
+
+affectation:
+    identifiant_int '=' valeurint{
+        try {
+        std::string val = $3->to_string(driver.getContexteint());
         $1->setVal(val);
         std::cout << "#=-> " << $1 << " = " << val << std::endl;
         } catch(const std::exception& err) {
             std::cerr << "#!-> " << err.what() << std::endl;
         }
     }
-    |ID '=' valeurstyle{
+    |identifiant_couleur '=' valeurcouleur{
         try {
-        std::vector<std::shared_ptr<Attribut>> val = $3->calculer(driver.getContextestyle());
-        driver.setVariablestyle($1, val);
-        std::cout << "#=-> " << $1 << " = " << "euh ouais le style" << std::endl;
+        std::string val = $3->calculer(driver.getContextecouleur());
+        $1->setVal(val);
+        std::cout << "#=-> " << $1 << " = " << val << std::endl;
         } catch(const std::exception& err) {
             std::cerr << "#!-> " << err.what() << std::endl;
         }
@@ -212,10 +260,28 @@ affectation:
     
 
 /*conditionelle:
-    IF '(' condition ')' ':'  code code_else ENDIF 
+    IF '(' condition ')' ':' inst code_else ENDIF {
+        std::cout<<$3;
+        if($3){
+            std::cout<<"ui";
+            $$=$6;
+        }else{
+            std::cout<<"non";
+            $$=$7;
+        }
+    }*/
+    //SI ( true ) : !T 'Premier Titre' SINON : !TT 'cringe' FINSI
+    /*
+    SI ( true ) : SI ( false ) : !T 'Premier Titre' SINON : !TT 'cringe' FINSI 
+    !TTT 'très cringe' SINON : !TTTT 'VRAIMENT très cringe' FINSI
+    */
+    //SI ( false ) : !T 'Premier Titre' SINON : !TT 'cringe' FINSI
 
-code_else:
-    |ELSE ':' code
+/*code_else:
+
+    |ELSE ':' inst{
+        $$=$3;
+    }*/
 
 condition:
     booleen '&' condition{
@@ -228,11 +294,17 @@ condition:
 
     }
     |booleen{
-        
+        $$=$1;
     }
 
 booleen://fonctionnera probablement comme les opérateurs binaires de la calculatrice
-    valeur '=''=' valeur{
+    TRUE {
+        $$=true;
+    }
+    |FALSE{
+        $$=false;
+    }
+    /*valeur '=''=' valeur{
 
     }
     |valeur '<''=' valeur{
@@ -632,7 +704,7 @@ atributs_nl:
         a.push_back($1);
         $$=a;
     }
-    |
+    //|/
     /*@STYLE ( titre1 ) [
 largeur : 1000px
 hauteur : 500%

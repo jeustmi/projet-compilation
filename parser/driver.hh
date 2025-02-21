@@ -15,6 +15,7 @@ private:
 
 public:
     Driver() = default;
+    Driver(Driver const & driver)= default;
 
     const   Contexte<int>& getContexteint() const;
     int  getVariableint(const std::string& name) const;
