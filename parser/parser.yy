@@ -96,7 +96,12 @@
 %type <objet> objet
 
 %type <bool> condition
+%type <int> int_comp
+%type <std::string> couleur_comp
+%type <std::vector<std::shared_ptr<Attribut>>> style_comp
+
 %type <bool> booleen
+
 
 %type <std::string> commentaire
 %type <std::string> texte
@@ -147,7 +152,7 @@ affectation:
     }
     |identifiant_int '=' valeur_int{
         try {
-            std::string val = $3->to_string(driver.getContexteint());
+            std::string val = std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint());
             $1->setVal(val);
         } catch(const std::exception& err) {
             std::cerr << "#!-> " << err.what() << std::endl;
@@ -199,32 +204,74 @@ affectation:
 identifiant_int:
     valeur_bloc '.' HEIGHT{
         std::shared_ptr<Hauteur> h(std::make_shared<Hauteur>());
-        $1->addAttribut(h);
+        for(auto a : $1->getAttributs()){
+            if(a->type()=="height"){
+                h=std::dynamic_pointer_cast<Hauteur>(a);
+            }
+        }
+        if(h->getVal()==""){
+            $1->addAttribut(h);
+        }
         $$=h;
     }
     |valeur_bloc '.' WIDTH{
         std::shared_ptr<Largeur> l(std::make_shared<Largeur>());
-        $1->addAttribut(l);
+        for(auto a : $1->getAttributs()){
+            if(a->type()=="width"){
+                l=std::dynamic_pointer_cast<Largeur>(a);
+            }
+        }
+        if(l->getVal()==""){
+            $1->addAttribut(l);
+        }
         $$=l;
     }
     |valeur_bloc '.' OPACITY{
         std::shared_ptr<Opacite> o(std::make_shared<Opacite>());
-        $1->addAttribut(o);
+        for(auto a : $1->getAttributs()){
+            if(a->type()=="opacity"){
+                o=std::dynamic_pointer_cast<Opacite>(a);
+            }
+        }
+        if(o->getVal()==""){
+            $1->addAttribut(o);
+        }
         $$=o;
     }
     |ID '.' HEIGHT{
         std::shared_ptr<Hauteur> h(std::make_shared<Hauteur>());
-        (driver.getVariablebloc($1))->addAttribut(h);
+        for(auto a : (driver.getVariablebloc($1))->getAttributs()){
+            if(a->type()=="height"){
+                h=std::dynamic_pointer_cast<Hauteur>(a);
+            }
+        }
+        if(h->getVal()==""){
+            (driver.getVariablebloc($1))->addAttribut(h);
+        }
         $$=h;
     }
     |ID '.' WIDTH{
         std::shared_ptr<Largeur> l(std::make_shared<Largeur>());
-        (driver.getVariablebloc($1))->addAttribut(l);
+        for(auto a : (driver.getVariablebloc($1))->getAttributs()){
+            if(a->type()=="width"){
+                l=std::dynamic_pointer_cast<Largeur>(a);
+            }
+        }
+        if(l->getVal()==""){
+            (driver.getVariablebloc($1))->addAttribut(l);
+        }
         $$=l;
     }
     |ID '.' OPACITY{
         std::shared_ptr<Opacite> o(std::make_shared<Opacite>());
-        (driver.getVariablebloc($1))->addAttribut(o);
+        for(auto a : (driver.getVariablebloc($1))->getAttributs()){
+            if(a->type()=="opacity"){
+                o=std::dynamic_pointer_cast<Opacite>(a);
+            }
+        }
+        if(o->getVal()==""){
+            (driver.getVariablebloc($1))->addAttribut(o);
+        }
         $$=o;
     }
 
@@ -246,7 +293,7 @@ valeur_int:
         int val1 = $1->calculer(driver.getContexteint());
         int val2 = $3->calculer(driver.getContexteint());
         std::string s;
-        if(($1->to_string(driver.getContexteint()).back()='x')){
+        if(($1->getSuffixe(driver.getContexteint()).back()='x')){
             s="px";
         }
         else{
@@ -263,7 +310,7 @@ valeur_int:
         int val1 = $1->calculer(driver.getContexteint());
         int val2 = $3->calculer(driver.getContexteint());
         std::string s;
-        if(($1->to_string(driver.getContexteint()).back()='x')){
+        if(($1->getSuffixe(driver.getContexteint()).back()='x')){
             s="px";
         }
         else{
@@ -280,7 +327,7 @@ valeur_int:
         int val1 = $1->calculer(driver.getContexteint());
         int val2 = $3->calculer(driver.getContexteint());
         std::string s;
-        if(($1->to_string(driver.getContexteint()).back()='x')){
+        if(($1->getSuffixe(driver.getContexteint()).back()='x')){
             s="px";
         }
         else{
@@ -297,7 +344,7 @@ valeur_int:
         int val1 = $1->calculer(driver.getContexteint());
         int val2 = $3->calculer(driver.getContexteint());
         std::string s;
-        if(($1->to_string(driver.getContexteint()).back()='x')){
+        if(($1->getSuffixe(driver.getContexteint()).back()='x')){
             s="px";
         }
         else{
@@ -323,22 +370,50 @@ ratio:
 identifiant_couleur:
     valeur_bloc '.' TEXTCOLOR{
         std::shared_ptr<CouleurTexte> t(std::make_shared<CouleurTexte>());
-        $1->addAttribut(t);
+        for(auto a : $1->getAttributs()){
+            if(a->type()=="color"){
+                t=std::dynamic_pointer_cast<CouleurTexte>(a);
+            }
+        }
+        if(t->getVal()==""){
+            $1->addAttribut(t);
+        }
         $$=t;
     }
     |valeur_bloc '.' BACKGROUNDCOLOR{
         std::shared_ptr<CouleurFond> f(std::make_shared<CouleurFond>());
-        $1->addAttribut(f);
+        for(auto a : $1->getAttributs()){
+            if(a->type()=="background-color"){
+                f=std::dynamic_pointer_cast<CouleurFond>(a);
+            }
+        }
+        if(f->getVal()==""){
+            $1->addAttribut(f);
+        }
         $$=f;
     }
     |ID '.' TEXTCOLOR{
         std::shared_ptr<CouleurTexte> t(std::make_shared<CouleurTexte>());
-        (driver.getVariablebloc($1))->addAttribut(t);
+        for(auto a : (driver.getVariablebloc($1))->getAttributs()){
+            if(a->type()=="color"){
+                t=std::dynamic_pointer_cast<CouleurTexte>(a);
+            }
+        }
+        if(t->getVal()==""){
+            (driver.getVariablebloc($1))->addAttribut(t);
+        }
         $$=t;
     }
     |ID '.' BACKGROUNDCOLOR{
         std::shared_ptr<CouleurFond> f(std::make_shared<CouleurFond>());
-        (driver.getVariablebloc($1))->addAttribut(f);
+        for(auto a : (driver.getVariablebloc($1))->getAttributs()){
+            if(a->type()=="background-color"){
+                f=std::dynamic_pointer_cast<CouleurFond>(a);
+            }
+        }
+        if(f->getVal()==""){
+            (driver.getVariablebloc($1))->addAttribut(f);
+        }
         $$=f;
     }
 
@@ -352,6 +427,9 @@ valeur_couleur:
 
 couleur:
     HEXANUMBER {
+        for(auto & c : $1){
+            c=std::toupper(c);
+        }
         $$=$1;
     }
     |RGB '(' valeur_int ',' valeur_int ',' valeur_int ')'{
@@ -418,7 +496,10 @@ attributs_nl:
 
 // Bloc (std::shared_ptr<Bloc>)
 valeur_bloc:
-    TITRE selecteur {
+    ID{
+        $$=driver.getVariablebloc($1);
+    }
+    |TITRE selecteur {
         $$=prog.getTitre($2);
     }
     | PARAGRAPH selecteur {
@@ -446,7 +527,7 @@ bloc:
         $$=std::make_shared<Titre>($2.attr,$2.text,$1);
     }
     |TITRE objet valeur_int{  
-        $$=std::make_shared<Titre>($2.attr,$2.text+$3->to_string(driver.getContexteint()),$1);
+        $$=std::make_shared<Titre>($2.attr,$2.text+std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint()),$1);
     }
     | PARAGRAPH objet{
         $$=std::make_shared<Paragraphe>($2.attr,$2.text);
@@ -478,10 +559,10 @@ attributs_virgules:
 
 attribut:
     HEIGHT ':' valeur_int{
-        $$=std::make_shared<Hauteur>($3->to_string(driver.getContexteint()));
+        $$=std::make_shared<Hauteur>(std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint()));
     }
     | WIDTH ':' valeur_int{
-        $$=std::make_shared<Largeur>($3->to_string(driver.getContexteint()));
+        $$=std::make_shared<Largeur>(std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint()));
     }
     | TEXTCOLOR ':' valeur_couleur{
         $$=std::make_shared<CouleurTexte>($3->calculer(driver.getContextecouleur()));
@@ -490,7 +571,7 @@ attribut:
         $$=std::make_shared<CouleurFond>($3->calculer(driver.getContextecouleur()));
     }
     | OPACITY ':'  valeur_int{
-        $$=std::make_shared<Opacite>($3->to_string(driver.getContexteint()));
+        $$=std::make_shared<Opacite>(std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint()));
     }
 
 //----------------------------------------------------------------------------------------------------------------
@@ -498,21 +579,56 @@ attribut:
 
 conditionelle:
     IF '(' condition ')' ':' code code_else ENDIF {
+        if($3){
+            std::cout << "\n\n\nEZZZZZZZZZZZZZZZZz\n\n\n";
+        }
+        else{
+            std::cout << "\n\n\nA CHIER\n\n\n";
+        }
     }
+    /*
+    !T 'Un titre'
+!T[0].couleurFond = #000000
+SI (!T[0].couleurFond == #000000) : !T[0].couleurTexte = #FF0000 FINSI
+*/
+/*
+!T 'Un titre'
+a=!T[0]
+SI (!T[0] == !T[0]) : !T[0].couleurTexte = #FF0000 FINSI
+*/
+/*
+    !T 'Un titre'
+!T[0].couleurFond = #000000
+SI (!T[0].couleurFond == #000000) : !T 'Un titre' FINSI
+*/
+/*
+    !T 'Un titre'
+!T[0].couleurFond = #000000
+SI (true) : !T 'Un titre' FINSI
+*/
+/*
+!T 'Un titre'
+monTitre = !T[0]
+monTitre.couleurTexte = #FF0000
+monTitre.largeur= 500px
+
+*/
+
 
 code_else:
     |ELSE ':' code{
+
     }
 
 condition:
     booleen '&' condition{
-
+        $$=($1 & $3);
     }
     |booleen '|' condition{
-
+        $$=($1 | $3);
     }
     |'!' booleen{
-
+        $$=not($2);
     }
     |booleen{
         $$=$1;
@@ -525,19 +641,60 @@ booleen:
     |FALSE{
         $$=false;
     }
-    /*valeur_ '=''=' valeur_{
-
+    |int_comp '=''=' int_comp{
+        $$=($1==$4);
     }
-    |valeur_ '<''=' valeur_{
-
+    |int_comp '!''=' int_comp{
+        $$=($1!=$4);
     }
-    |valeur_ '>''=' valeur_{
-
+    |int_comp '<''=' int_comp{
+        $$=($1<=$4);
     }
-    |valeur_ '!''=' valeur_{
+    |int_comp '>''=' int_comp{
+        $$=($1>=$4);
+    }
+    |couleur_comp '=''=' couleur_comp{
+        $$=($1==$4);
+    }
+    |couleur_comp '!''=' couleur_comp{
+        $$=($1!=$4);
+    }
+    |style_comp '=''=' style_comp{
+        $$=($1==$4);
+    }
+    |style_comp '!''=' style_comp{
+        $$=($1!=$4);
+    }
+    |valeur_bloc '=''=' valeur_bloc{
+        $$=($1==$4);
+    }
+    |valeur_bloc '!''=' valeur_bloc{
+        $$=($1!=$4);
+    }
 
-    }*/
+int_comp:
+    valeur_int{
+        $$=$1->calculer(driver.getContexteint());
+    }
+    |identifiant_int{
+        $$=std::stoi($1->getVal());
+    }
 
+couleur_comp:
+    valeur_couleur{
+        $$=$1->calculer(driver.getContextecouleur());
+    }
+    |identifiant_couleur{
+        $$=$1->getVal();
+    }
+
+style_comp:
+    valeur_style{
+        $$=$1->calculer(driver.getContextestyle());
+    }
+    |identifiant_style{
+        $$=$1->getAttributs();
+    }
 //----------------------------------------------------------------------------------------------------------------
 // Boucles for
 

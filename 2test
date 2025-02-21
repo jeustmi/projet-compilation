@@ -8,7 +8,13 @@ sur trois lignes'
 !I 'rick.jpg'
 !TTT 'RickRoll'%%%
 
-%%%exemple 3 (marche pas à cause des commentaires)%%%
+%%%@DEFINE (encodage) {'ISO-8859-1'}
+%% Utilisation de l'encodage ISO-8859-1 pour faire apparaître des caractères erronés
+@DEFINE (icone) {'rick.ico'}
+@DEFINE (langue) {'fr'}
+@TITREPAGE 'rickroll 2'
+!T 'Un problème ?'
+%% Le caractère è ne doit pas apparaître correctement%%%
 
 %%%!T [couleurTexte : rgb(255,0,0), couleurFond : #00FF00, opacité : 50% ] 'Ceci est un long texte'
 !P [largeur : 1000px, hauteur : 500px, couleurFond : #0000ff] 'Lorem ipsum dolor sit amet, consectetur adipiscing
@@ -25,7 +31,7 @@ couleurFond : #000000
 !TT 'Premier sous-titre'
 !T 'Deuxième Titre'%%%
 
-indice = 2 
+%%%indice = 2 
 %% mettre 2 en indice ne permet pas de retrouver la page du prof (les indices commencent bien à 0, cf le sujet n°1)
 couleur1 = #ff0000
 couleur2 = rgb(0,255,0)
@@ -36,9 +42,9 @@ bloc = !P[indice]
 bloc.couleurFond = couleur1
 style1 = [couleurFond : couleur2]
 bloc = !P[indice-1]
-bloc.style = style1
+bloc.style = style1%%%
 
-%%%!T 'Un titre'
+!T 'Un titre'
 !T[0].couleurFond = #000000
 SI (!T[0].couleurFond == #000000) :
 !T[0].couleurTexte = #FF0000
@@ -48,7 +54,7 @@ SI (monTitre.couleurTexte == rgb(255,0,0)):
 monTitre.largeur=500px
 SINON:
 monTitre.largeur=800px
-FINSI%%%
+FINSI
 
 %%%POUR i [0,255] +25 :
 !T 'Titre ' i/25

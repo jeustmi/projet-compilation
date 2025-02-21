@@ -31,13 +31,13 @@ std::string Programme::creation_page() {
         std::cout<<s.type()<<std::endl;
         if(s.type()=="all"){
             for(auto b : _insts){
-                b->setAttributs(s.getAttr());
+                b->setAttributs(s.getAttributs());
             }
         }
         else{
             for(auto b : _insts){
                 if(s.type()==b->type()){
-                    b->setAttributs(s.getAttr());
+                    b->setAttributs(s.getAttributs());
                 }
                 /*if(s.type()=="p"){
 
@@ -72,7 +72,6 @@ std::string Programme::creation_page() {
 
 
 std::shared_ptr<Titre> Programme::getTitre(int i){
-    --i;
     int j=0;
     for(auto b : _insts){
         if(b->type()[0]=='h'){
@@ -88,7 +87,6 @@ std::shared_ptr<Titre> Programme::getTitre(int i){
 }
 
 std::shared_ptr<Paragraphe> Programme::getParagraphe(int i){
-    --i;
     int j=0;
     for(auto b : _insts){
         if(b->type()=="p"){
@@ -104,7 +102,6 @@ std::shared_ptr<Paragraphe> Programme::getParagraphe(int i){
 }
 
 std::shared_ptr<Image> Programme::getImage(int i){
-    --i;
     int j=0;
     for(auto b : _insts){
         if(b->type()=="img"){
