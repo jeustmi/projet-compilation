@@ -1,13 +1,27 @@
 #include "bloc.hh"
 #include <iostream>
 
-std::string Bloc::calculer() const {
+std::string Bloc::calculer(const Driver & d) const {
     std::string ret;
     ret="<"+type();
     if(!_attr.empty()){
         ret+=" style=\"";
         for(auto a : _attr){
-            ret+=a->type()+":"+a->getVal()+"; ";
+            if(! a->variable()){
+                ret+=a->type()+":"+a->getVal()+"; ";
+            }
+            else{
+                switch (a->contexte())
+                {
+                case Attribut::contexte_type::integer:
+                    ret+=a->type()+":"+std::to_string(d.getContexteint()[a->getVal()])+"; ";
+                    break;
+                
+                case Attribut::contexte_type::couleur:
+                    ret+=a->type()+":"+d.getContextecouleur()[a->getVal()]+"; ";
+                    break;
+                }
+            }
         }
         ret+="\"";
     }
