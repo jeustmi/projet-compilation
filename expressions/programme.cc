@@ -22,41 +22,7 @@ std::string Programme::creation_page(const Driver & d) {
 
     _page+="<body>";
     _page.incTab();
-
-    for(auto c : _comms){
-        _page+=c.calculer();
-    }
-
-    for( auto s : _styles){
-        std::cout<<s.type()<<std::endl;
-        if(s.type()=="all"){
-            for(auto b : _insts){
-                b->setAttributs(s.getAttr());
-            }
-        }
-        else{
-            for(auto b : _insts){
-                if(s.type()==b->type()){
-                    b->setAttributs(s.getAttr());
-                }
-                /*if(s.type()=="p"){
-
-                }
-                else if(s.type()[0]=='h'){
-                    for(int i = 0; i<10; ++i){
-                        if(s.type()=="h"+std::to_string(i)){
-                            
-                        }
-                    }
-                }*/
-            }
-        }
-        
-    }
-
-    for(auto b : _insts){
-        _page+=b->calculer(d);
-    }
+    _page+=calculer(d);
 
     _page.decTab();
     _page+="</body>";
@@ -71,8 +37,9 @@ std::string Programme::creation_page(const Driver & d) {
 }
 
 std::string Programme::calculer(const Driver & d) {
+    Page ret;
     for(auto c : _comms){
-        _page+=c.calculer();
+        ret+=c;
     }
 
     for( auto s : _styles){
@@ -102,9 +69,9 @@ std::string Programme::calculer(const Driver & d) {
     }
 
     for(auto b : _insts){
-        _page+=b->calculer(d);
+        ret+=b->calculer(d);
     }
-    return _page.getCode();
+    return ret.getCode();
 }
 
 
