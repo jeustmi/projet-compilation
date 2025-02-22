@@ -98,6 +98,9 @@
 
 %type <bool> condition
 %type <bool> booleen
+%type <std::vector<std::shared_ptr<Bloc>>> code_boucle
+%type <std::shared_ptr<Bloc>> instruction_boucle
+
 
 %type <std::string> commentaire
 %type <std::string> texte
@@ -538,60 +541,117 @@ booleen:
 
 //----------------------------------------------------------------------------------------------------------------
 // Boucles for
-
+//L'exemple 7 ne fonctionne pas avec notre code. Voici une explication de ce qui marche.
 boucle:
-    FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc NL END{
-        driver.setVariableint($2, $4);
-        for (int i=$4; i<$6;i=i+$8){
-            prog.addBloc($11);
+    FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle NL END{//On peut repeter un bloc pur autant de fois que l'on veut. Ce bloc ne doit pas dépendre de i
+        for(auto & e:$11){
+            driver.setVariableint($2, $4);
+            for (int i=$4; i<$6;i=i+$8){
+                prog.addBloc(e);
+            }
         }
     }
-    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID NL END{
-        for (int i=$4; i<$6;i=i+$8){
-            driver.setVariableint($2, i);
-            auto nouv = std::make_shared<Titre>($11->getAttr(),$11->getText(), $11->getNiv());
-            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]);
-            nouv->setText(text);
-            prog.addBloc(nouv);
+    //Les cas d'en dessous sont pour repeter un titre auquel on concatène à la fin une expression de la forme i.a ou .est dans {+,-,*,/} et a est un entier.
+    //Cette propriété ne faisant pas partie de ce qui était demandé, elle a été ajoutée en brut dans le code des boucles
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle ID NL END{
+        for(auto & e:$11){
+            for (int i=$4; i<$6;i=i+$8){
+                driver.setVariableint($2, i);
+                auto nouv = std::make_shared<Titre>(e->getAttr(),e->getText(), e->getNiv());
+                std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]);
+                nouv->setText(text);
+                prog.addBloc(nouv);
+            }
         }
     }
-    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'/'valeur_int NL END{
-        for (int i=$4; i<$6;i=i+$8){
-            driver.setVariableint($2, i);
-            auto nouv = std::make_shared<Titre>($11->getAttr(),$11->getText(), $11->getNiv());
-            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]/$14->calculer(driver.getContexteint()));
-            nouv->setText(text);
-            prog.addBloc(nouv);
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle ID'/'valeur_int NL END{
+        for(auto & e:$11){
+            for (int i=$4; i<$6;i=i+$8){
+                driver.setVariableint($2, i);
+                auto nouv = std::make_shared<Titre>(e->getAttr(),e->getText(), e->getNiv());
+                std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]/$14->calculer(driver.getContexteint()));
+                nouv->setText(text);
+                prog.addBloc(nouv);
+            }
         }
     }
-    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'-'valeur_int NL END{
-        for (int i=$4; i<$6;i=i+$8){
-            driver.setVariableint($2, i);
-            auto nouv = std::make_shared<Titre>($11->getAttr(),$11->getText(), $11->getNiv());
-            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]-$14->calculer(driver.getContexteint()));
-            nouv->setText(text);
-            prog.addBloc(nouv);
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle ID'-'valeur_int NL END{
+        for(auto & e:$11){
+            for (int i=$4; i<$6;i=i+$8){
+                driver.setVariableint($2, i);
+                auto nouv = std::make_shared<Titre>(e->getAttr(),e->getText(), e->getNiv());
+                std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]-$14->calculer(driver.getContexteint()));
+                nouv->setText(text);
+                prog.addBloc(nouv);
+            }
         }
     }
-    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'+'valeur_int NL END{
-        for (int i=$4; i<$6;i=i+$8){
-            driver.setVariableint($2, i);
-            auto nouv = std::make_shared<Titre>($11->getAttr(),$11->getText(), $11->getNiv());
-            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]+$14->calculer(driver.getContexteint()));
-            nouv->setText(text);
-            prog.addBloc(nouv);
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle ID'+'valeur_int NL END{
+        for(auto & e:$11){
+            for (int i=$4; i<$6;i=i+$8){
+                driver.setVariableint($2, i);
+                auto nouv = std::make_shared<Titre>(e->getAttr(),e->getText(), e->getNiv());
+                std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]+$14->calculer(driver.getContexteint()));
+                nouv->setText(text);
+                prog.addBloc(nouv);
+            }
         }
     }
-    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'*'valeur_int NL END{
-        for (int i=$4; i<$6;i=i+$8){
-            driver.setVariableint($2, i);
-            auto nouv = std::make_shared<Titre>($11->getAttr(),$11->getText(), $11->getNiv());
-            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]*$14->calculer(driver.getContexteint()));
-            nouv->setText(text);
-            prog.addBloc(nouv);
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle ID'*'valeur_int NL END{
+        for(auto & e:$11){
+            for (int i=$4; i<$6;i=i+$8){
+                driver.setVariableint($2, i);
+                auto nouv = std::make_shared<Titre>(e->getAttr(),e->getText(), e->getNiv());
+                std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]*$14->calculer(driver.getContexteint()));
+                nouv->setText(text);
+                prog.addBloc(nouv);
+            }
         }
     }
 
+code_boucle:
+    instruction_boucle NL code_boucle{
+        auto tab=$3;
+        if($1!= nullptr)
+            tab.push_back($1);
+        $$=tab;
+    }
+    | NL code_boucle{
+        $$=$2;
+    }
+    | instruction_boucle{
+        std::vector<std::shared_ptr<Bloc>> tab;
+        if($1!= nullptr)
+            tab.push_back($1);
+        $$=tab;
+    }
+    | instruction_boucle NL{
+        std::vector<std::shared_ptr<Bloc>> tab;
+        if($1!= nullptr)
+            tab.push_back($1);
+        $$=tab;
+    }
+
+instruction_boucle:
+    affectation{
+        $$=nullptr;
+    }
+    |bloc{
+        $$=$1;
+    }
+    |conditionelle{
+        $$=nullptr;
+    }
+    |boucle{
+        $$=nullptr;
+    }
+    |meta_donnees{
+        $$=nullptr;
+    }
+    |commentaire{
+        prog.addComm($1);
+        $$=nullptr;
+    }
 operation_for:
     '+'NUMBER{
         $$=+$2;
