@@ -12,7 +12,7 @@ class Variable : public Expression<t> {
     t calculer(const Contexte<t>& contexte) const override{
         return contexte[_nom];
     };
-    std::string to_string(const Contexte<t>& contexte) const override {return "";}
+    std::string getSuffixe(const Contexte<t>& contexte) const override {return "";}
 
     private:
     std::string _nom;

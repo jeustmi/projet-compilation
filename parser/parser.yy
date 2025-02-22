@@ -97,9 +97,12 @@
 %type <objet> objet
 
 %type <bool> condition
+%type <int> int_comp
+%type <std::string> couleur_comp
+%type <std::vector<std::shared_ptr<Attribut>>> style_comp
+
 %type <bool> booleen
-%type <std::vector<std::shared_ptr<Bloc>>> code_boucle
-%type <std::shared_ptr<Bloc>> instruction_boucle
+
 
 
 %type <std::string> commentaire
@@ -151,7 +154,7 @@ affectation:
     }
     |identifiant_int '=' valeur_int{
         try {
-            std::string val = $3->to_string(driver.getContexteint());
+            std::string val = std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint());
             $1->setVal(val);
         } catch(const std::exception& err) {
             std::cerr << "#!-> " << err.what() << std::endl;
@@ -203,32 +206,74 @@ affectation:
 identifiant_int:
     valeur_bloc '.' HEIGHT{
         std::shared_ptr<Hauteur> h(std::make_shared<Hauteur>());
-        $1->addAttribut(h);
+        for(auto a : $1->getAttributs()){
+            if(a->type()=="height"){
+                h=std::dynamic_pointer_cast<Hauteur>(a);
+            }
+        }
+        if(h->getVal()==""){
+            $1->addAttribut(h);
+        }
         $$=h;
     }
     |valeur_bloc '.' WIDTH{
         std::shared_ptr<Largeur> l(std::make_shared<Largeur>());
-        $1->addAttribut(l);
+        for(auto a : $1->getAttributs()){
+            if(a->type()=="width"){
+                l=std::dynamic_pointer_cast<Largeur>(a);
+            }
+        }
+        if(l->getVal()==""){
+            $1->addAttribut(l);
+        }
         $$=l;
     }
     |valeur_bloc '.' OPACITY{
         std::shared_ptr<Opacite> o(std::make_shared<Opacite>());
-        $1->addAttribut(o);
+        for(auto a : $1->getAttributs()){
+            if(a->type()=="opacity"){
+                o=std::dynamic_pointer_cast<Opacite>(a);
+            }
+        }
+        if(o->getVal()==""){
+            $1->addAttribut(o);
+        }
         $$=o;
     }
     |ID '.' HEIGHT{
         std::shared_ptr<Hauteur> h(std::make_shared<Hauteur>());
-        (driver.getVariablebloc($1))->addAttribut(h);
+        for(auto a : (driver.getVariablebloc($1))->getAttributs()){
+            if(a->type()=="height"){
+                h=std::dynamic_pointer_cast<Hauteur>(a);
+            }
+        }
+        if(h->getVal()==""){
+            (driver.getVariablebloc($1))->addAttribut(h);
+        }
         $$=h;
     }
     |ID '.' WIDTH{
         std::shared_ptr<Largeur> l(std::make_shared<Largeur>());
-        (driver.getVariablebloc($1))->addAttribut(l);
+        for(auto a : (driver.getVariablebloc($1))->getAttributs()){
+            if(a->type()=="width"){
+                l=std::dynamic_pointer_cast<Largeur>(a);
+            }
+        }
+        if(l->getVal()==""){
+            (driver.getVariablebloc($1))->addAttribut(l);
+        }
         $$=l;
     }
     |ID '.' OPACITY{
         std::shared_ptr<Opacite> o(std::make_shared<Opacite>());
-        (driver.getVariablebloc($1))->addAttribut(o);
+        for(auto a : (driver.getVariablebloc($1))->getAttributs()){
+            if(a->type()=="opacity"){
+                o=std::dynamic_pointer_cast<Opacite>(a);
+            }
+        }
+        if(o->getVal()==""){
+            (driver.getVariablebloc($1))->addAttribut(o);
+        }
         $$=o;
     }
 
@@ -250,7 +295,7 @@ valeur_int:
         int val1 = $1->calculer(driver.getContexteint());
         int val2 = $3->calculer(driver.getContexteint());
         std::string s;
-        if(($1->to_string(driver.getContexteint()).back()='x')){
+        if(($1->getSuffixe(driver.getContexteint()).back()='x')){
             s="px";
         }
         else{
@@ -267,7 +312,7 @@ valeur_int:
         int val1 = $1->calculer(driver.getContexteint());
         int val2 = $3->calculer(driver.getContexteint());
         std::string s;
-        if(($1->to_string(driver.getContexteint()).back()='x')){
+        if(($1->getSuffixe(driver.getContexteint()).back()='x')){
             s="px";
         }
         else{
@@ -284,7 +329,7 @@ valeur_int:
         int val1 = $1->calculer(driver.getContexteint());
         int val2 = $3->calculer(driver.getContexteint());
         std::string s;
-        if(($1->to_string(driver.getContexteint()).back()='x')){
+        if(($1->getSuffixe(driver.getContexteint()).back()='x')){
             s="px";
         }
         else{
@@ -301,7 +346,7 @@ valeur_int:
         int val1 = $1->calculer(driver.getContexteint());
         int val2 = $3->calculer(driver.getContexteint());
         std::string s;
-        if(($1->to_string(driver.getContexteint()).back()='x')){
+        if(($1->getSuffixe(driver.getContexteint()).back()='x')){
             s="px";
         }
         else{
@@ -327,22 +372,50 @@ ratio:
 identifiant_couleur:
     valeur_bloc '.' TEXTCOLOR{
         std::shared_ptr<CouleurTexte> t(std::make_shared<CouleurTexte>());
-        $1->addAttribut(t);
+        for(auto a : $1->getAttributs()){
+            if(a->type()=="color"){
+                t=std::dynamic_pointer_cast<CouleurTexte>(a);
+            }
+        }
+        if(t->getVal()==""){
+            $1->addAttribut(t);
+        }
         $$=t;
     }
     |valeur_bloc '.' BACKGROUNDCOLOR{
         std::shared_ptr<CouleurFond> f(std::make_shared<CouleurFond>());
-        $1->addAttribut(f);
+        for(auto a : $1->getAttributs()){
+            if(a->type()=="background-color"){
+                f=std::dynamic_pointer_cast<CouleurFond>(a);
+            }
+        }
+        if(f->getVal()==""){
+            $1->addAttribut(f);
+        }
         $$=f;
     }
     |ID '.' TEXTCOLOR{
         std::shared_ptr<CouleurTexte> t(std::make_shared<CouleurTexte>());
-        (driver.getVariablebloc($1))->addAttribut(t);
+        for(auto a : (driver.getVariablebloc($1))->getAttributs()){
+            if(a->type()=="color"){
+                t=std::dynamic_pointer_cast<CouleurTexte>(a);
+            }
+        }
+        if(t->getVal()==""){
+            (driver.getVariablebloc($1))->addAttribut(t);
+        }
         $$=t;
     }
     |ID '.' BACKGROUNDCOLOR{
         std::shared_ptr<CouleurFond> f(std::make_shared<CouleurFond>());
-        (driver.getVariablebloc($1))->addAttribut(f);
+        for(auto a : (driver.getVariablebloc($1))->getAttributs()){
+            if(a->type()=="background-color"){
+                f=std::dynamic_pointer_cast<CouleurFond>(a);
+            }
+        }
+        if(f->getVal()==""){
+            (driver.getVariablebloc($1))->addAttribut(f);
+        }
         $$=f;
     }
 
@@ -356,6 +429,9 @@ valeur_couleur:
 
 couleur:
     HEXANUMBER {
+        for(auto & c : $1){
+            c=std::toupper(c);
+        }
         $$=$1;
     }
     |RGB '(' valeur_int ',' valeur_int ',' valeur_int ')'{
@@ -422,7 +498,10 @@ attributs_nl:
 
 // Bloc (std::shared_ptr<Bloc>)
 valeur_bloc:
-    TITRE selecteur {
+    ID{
+        $$=driver.getVariablebloc($1);
+    }
+    |TITRE selecteur {
         $$=prog.getTitre($2);
     }
     | PARAGRAPH selecteur {
@@ -479,10 +558,10 @@ attributs_virgules:
 
 attribut:
     HEIGHT ':' valeur_int{
-        $$=std::make_shared<Hauteur>($3->to_string(driver.getContexteint()));
+        $$=std::make_shared<Hauteur>(std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint()));
     }
     | WIDTH ':' valeur_int{
-        $$=std::make_shared<Largeur>($3->to_string(driver.getContexteint()));
+        $$=std::make_shared<Largeur>(std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint()));
     }
     | TEXTCOLOR ':' valeur_couleur{
         $$=std::make_shared<CouleurTexte>($3->calculer(driver.getContextecouleur()));
@@ -491,7 +570,7 @@ attribut:
         $$=std::make_shared<CouleurFond>($3->calculer(driver.getContextecouleur()));
     }
     | OPACITY ':'  valeur_int{
-        $$=std::make_shared<Opacite>($3->to_string(driver.getContexteint()));
+        $$=std::make_shared<Opacite>(std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint()));
     }
 
 //----------------------------------------------------------------------------------------------------------------
@@ -499,21 +578,56 @@ attribut:
 
 conditionelle:
     IF '(' condition ')' ':' code code_else ENDIF {
+        if($3){
+            std::cout << "\n\n\nEZZZZZZZZZZZZZZZZz\n\n\n";
+        }
+        else{
+            std::cout << "\n\n\nA CHIER\n\n\n";
+        }
     }
+    /*
+    !T 'Un titre'
+!T[0].couleurFond = #000000
+SI (!T[0].couleurFond == #000000) : !T[0].couleurTexte = #FF0000 FINSI
+*/
+/*
+!T 'Un titre'
+a=!T[0]
+SI (!T[0] == !T[0]) : !T[0].couleurTexte = #FF0000 FINSI
+*/
+/*
+    !T 'Un titre'
+!T[0].couleurFond = #000000
+SI (!T[0].couleurFond == #000000) : !T 'Un titre' FINSI
+*/
+/*
+    !T 'Un titre'
+!T[0].couleurFond = #000000
+SI (true) : !T 'Un titre' FINSI
+*/
+/*
+!T 'Un titre'
+monTitre = !T[0]
+monTitre.couleurTexte = #FF0000
+monTitre.largeur= 500px
+
+*/
+
 
 code_else:
     |ELSE ':' code{
+
     }
 
 condition:
     booleen '&' condition{
-
+        $$=($1 & $3);
     }
     |booleen '|' condition{
-
+        $$=($1 | $3);
     }
     |'!' booleen{
-
+        $$=not($2);
     }
     |booleen{
         $$=$1;
@@ -526,132 +640,119 @@ booleen:
     |FALSE{
         $$=false;
     }
-    /*valeur_ '=''=' valeur_{
-
+    |int_comp '=''=' int_comp{
+        $$=($1==$4);
     }
-    |valeur_ '<''=' valeur_{
-
+    |int_comp '!''=' int_comp{
+        $$=($1!=$4);
     }
-    |valeur_ '>''=' valeur_{
-
+    |int_comp '<''=' int_comp{
+        $$=($1<=$4);
     }
-    |valeur_ '!''=' valeur_{
+    |int_comp '>''=' int_comp{
+        $$=($1>=$4);
+    }
+    |couleur_comp '=''=' couleur_comp{
+        $$=($1==$4);
+    }
+    |couleur_comp '!''=' couleur_comp{
+        $$=($1!=$4);
+    }
+    |style_comp '=''=' style_comp{
+        $$=($1==$4);
+    }
+    |style_comp '!''=' style_comp{
+        $$=($1!=$4);
+    }
+    |valeur_bloc '=''=' valeur_bloc{
+        $$=($1==$4);
+    }
+    |valeur_bloc '!''=' valeur_bloc{
+        $$=($1!=$4);
+    }
 
-    }*/
+int_comp:
+    valeur_int{
+        $$=$1->calculer(driver.getContexteint());
+    }
+    |identifiant_int{
+        $$=std::stoi($1->getVal());
+    }
 
+couleur_comp:
+    valeur_couleur{
+        $$=$1->calculer(driver.getContextecouleur());
+    }
+    |identifiant_couleur{
+        $$=$1->getVal();
+    }
+
+style_comp:
+    valeur_style{
+        $$=$1->calculer(driver.getContextestyle());
+    }
+    |identifiant_style{
+        $$=$1->getAttributs();
+    }
 //----------------------------------------------------------------------------------------------------------------
 // Boucles for
 //L'exemple 7 ne fonctionne pas avec notre code. Voici une explication de ce qui marche.
 boucle:
-    FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle NL END{//On peut repeter un bloc pur autant de fois que l'on veut. Ce bloc ne doit pas dépendre de i
-        for(auto & e:$11){
-            driver.setVariableint($2, $4);
-            for (int i=$4; i<$6;i=i+$8){
-                prog.addBloc(e);
-            }
+    FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc NL END{//On peut repeter un bloc pur autant de fois que l'on veut. Ce bloc ne doit pas dépendre de i
+        driver.setVariableint($2, $4);
+        for (int i=$4; i<$6;i=i+$8){
+            prog.addBloc($11);
         }
     }
     //Les cas d'en dessous sont pour repeter un titre auquel on concatène à la fin une expression de la forme i.a ou .est dans {+,-,*,/} et a est un entier.
     //Cette propriété ne faisant pas partie de ce qui était demandé, elle a été ajoutée en brut dans le code des boucles
-    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle ID NL END{
-        for(auto & e:$11){
-            for (int i=$4; i<$6;i=i+$8){
-                driver.setVariableint($2, i);
-                auto nouv = std::make_shared<Titre>(e->getAttr(),e->getText(), e->getNiv());
-                std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]);
-                nouv->setText(text);
-                prog.addBloc(nouv);
-            }
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID NL END{
+        for (int i=$4; i<$6;i=i+$8){
+            driver.setVariableint($2, i);
+            auto nouv = std::make_shared<Titre>($11->getAttributs(),$11->getText(), $11->getNiv());
+            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]);
+            nouv->setText(text);
+            prog.addBloc(nouv);
         }
     }
-    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle ID'/'valeur_int NL END{
-        for(auto & e:$11){
-            for (int i=$4; i<$6;i=i+$8){
-                driver.setVariableint($2, i);
-                auto nouv = std::make_shared<Titre>(e->getAttr(),e->getText(), e->getNiv());
-                std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]/$14->calculer(driver.getContexteint()));
-                nouv->setText(text);
-                prog.addBloc(nouv);
-            }
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'/'valeur_int NL END{
+        for (int i=$4; i<$6;i=i+$8){
+            driver.setVariableint($2, i);
+            auto nouv = std::make_shared<Titre>($11->getAttributs(),$11->getText(), $11->getNiv());
+            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]/$14->calculer(driver.getContexteint()));
+            nouv->setText(text);
+            prog.addBloc(nouv);
         }
     }
-    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle ID'-'valeur_int NL END{
-        for(auto & e:$11){
-            for (int i=$4; i<$6;i=i+$8){
-                driver.setVariableint($2, i);
-                auto nouv = std::make_shared<Titre>(e->getAttr(),e->getText(), e->getNiv());
-                std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]-$14->calculer(driver.getContexteint()));
-                nouv->setText(text);
-                prog.addBloc(nouv);
-            }
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'-'valeur_int NL END{
+        for (int i=$4; i<$6;i=i+$8){
+            driver.setVariableint($2, i);
+            auto nouv = std::make_shared<Titre>($11->getAttributs(),$11->getText(), $11->getNiv());
+            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]-$14->calculer(driver.getContexteint()));
+            nouv->setText(text);
+            prog.addBloc(nouv);
         }
     }
-    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle ID'+'valeur_int NL END{
-        for(auto & e:$11){
-            for (int i=$4; i<$6;i=i+$8){
-                driver.setVariableint($2, i);
-                auto nouv = std::make_shared<Titre>(e->getAttr(),e->getText(), e->getNiv());
-                std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]+$14->calculer(driver.getContexteint()));
-                nouv->setText(text);
-                prog.addBloc(nouv);
-            }
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'+'valeur_int NL END{
+       for (int i=$4; i<$6;i=i+$8){
+            driver.setVariableint($2, i);
+            auto nouv = std::make_shared<Titre>($11->getAttributs(),$11->getText(), $11->getNiv());
+            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]+$14->calculer(driver.getContexteint()));
+            nouv->setText(text);
+            prog.addBloc(nouv);
         }
     }
-    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL code_boucle ID'*'valeur_int NL END{
-        for(auto & e:$11){
-            for (int i=$4; i<$6;i=i+$8){
-                driver.setVariableint($2, i);
-                auto nouv = std::make_shared<Titre>(e->getAttr(),e->getText(), e->getNiv());
-                std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]*$14->calculer(driver.getContexteint()));
-                nouv->setText(text);
-                prog.addBloc(nouv);
-            }
+    |FOR  ID '['NUMBER','NUMBER']' operation_for ':' NL bloc ID'*'valeur_int NL END{
+        for (int i=$4; i<$6;i=i+$8){
+            driver.setVariableint($2, i);
+            auto nouv = std::make_shared<Titre>($11->getAttributs(),$11->getText(), $11->getNiv());
+            std::string text=nouv->getText()+std::to_string(driver.getContexteint()[$12]*$14->calculer(driver.getContexteint()));
+            nouv->setText(text);
+            prog.addBloc(nouv);
         }
     }
+   
 
-code_boucle:
-    instruction_boucle NL code_boucle{
-        auto tab=$3;
-        if($1!= nullptr)
-            tab.push_back($1);
-        $$=tab;
-    }
-    | NL code_boucle{
-        $$=$2;
-    }
-    | instruction_boucle{
-        std::vector<std::shared_ptr<Bloc>> tab;
-        if($1!= nullptr)
-            tab.push_back($1);
-        $$=tab;
-    }
-    | instruction_boucle NL{
-        std::vector<std::shared_ptr<Bloc>> tab;
-        if($1!= nullptr)
-            tab.push_back($1);
-        $$=tab;
-    }
-
-instruction_boucle:
-    affectation{
-        $$=nullptr;
-    }
-    |bloc{
-        $$=$1;
-    }
-    |conditionelle{
-        $$=nullptr;
-    }
-    |boucle{
-        $$=nullptr;
-    }
-    |meta_donnees{
-        $$=nullptr;
-    }
-    |commentaire{
-        prog.addComm($1);
-        $$=nullptr;
-    }
 operation_for:
     '+'NUMBER{
         $$=+$2;
@@ -659,7 +760,7 @@ operation_for:
     |'-'NUMBER{
         $$=-$2;
     }
-   
+
 //----------------------------------------------------------------------------------------------------------------
 // Meta_données (@define)
 
