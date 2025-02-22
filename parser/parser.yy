@@ -100,8 +100,8 @@
 %type <int> int_comp
 %type <std::string> couleur_comp
 %type <std::vector<std::shared_ptr<Attribut>>> style_comp
-
 %type <bool> booleen
+%type <std::string> code_else
 
 
 %type <std::string> commentaire
@@ -143,25 +143,25 @@ instruction:
 // Affectation
 
 affectation:
-    ID  '=' valeur_int{
-        try {
+    ID  '=' valeur_int{ // Pour stocker des entiers, on a les classes Constante<int> et Variable<int> qui contiennent un entier et une chaîne de caractères qui représente le type ("px" ou "%")
+        try { 
             int val = $3->calculer(driver.getContexteint());
-            driver.setVariableint($1, val);
+            driver.setVariableint($1, val); // Par défaut pour les variables, on ne stocke que l'entier (et on rajoute arbitrairement "px" lorsque c'est nécessaire)
         } catch(const std::exception& err) {
             std::cerr << "#!-> " << err.what() << std::endl;
         }
     }
     |identifiant_int '=' valeur_int{
         try {
-            std::string val = std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint());
+            std::string val = std::to_string($3->calculer(driver.getContexteint()))+$3->getSuffixe(driver.getContexteint()); // Ici, val est un string (std::string(1000px) par exemple) car identifiant_int ne peut être qu'un identifiant d'attribut, qui nécessite donc une chaîne 
             $1->setVal(val);
         } catch(const std::exception& err) {
             std::cerr << "#!-> " << err.what() << std::endl;
         }
     }
     |ID '=' valeur_couleur{
-        try {
-            std::string val = $3->calculer(driver.getContextecouleur());
+        try { // Lorsqu'on tente d'affecter une variable à une autre, on ne peut pas savoir à priori de quel type est la variable à droite, ce qui amène le parser à choisir arbitrairement une règle, et donc un contexte, à utiliser, ce qui amène la plupart du temps à une erreur
+            std::string val = $3->calculer(driver.getContextecouleur()); 
             driver.setVariablecouleur($1, val);
         } catch(const std::exception& err) {
             std::cerr << "#!-> " << err.what() << std::endl;
@@ -185,7 +185,7 @@ affectation:
     }
     |identifiant_style '=' valeur_style{
         try {
-            std::vector<std::shared_ptr<Attribut>> val = $3->calculer(driver.getContextestyle());
+            std::vector<std::shared_ptr<Attribut>> val = $3->calculer(driver.getContextestyle()); 
             $1->setAttributs(val);
         } catch(const std::exception& err) {
             std::cerr << "#!-> " << err.what() << std::endl;
@@ -193,7 +193,7 @@ affectation:
     }
     |ID '=' valeur_bloc{
         try{
-            driver.setVariablebloc($1, $3);
+            driver.setVariablebloc($1, $3); 
         } catch(const std::exception& err) {
             std::cerr << "#!-> " << err.what() << std::endl;
         }
@@ -203,7 +203,7 @@ affectation:
 
 // Int
 identifiant_int:
-    valeur_bloc '.' HEIGHT{
+    valeur_bloc '.' HEIGHT{ // Grâce au CSS, ajouter un nouvel attribut ou changer la valeur du dernier de ceux-là ne change rien au résultat, on a donc ces deux implémentation en utilisant la plus pratique à chaque instant
         std::shared_ptr<Hauteur> h(std::make_shared<Hauteur>());
         for(auto a : $1->getAttributs()){
             if(a->type()=="height"){
@@ -211,9 +211,9 @@ identifiant_int:
             }
         }
         if(h->getVal()==""){
-            $1->addAttribut(h);
+            $1->addAttribut(h); // En l'occurrence, on ajoute un nouvel attribut s'il n'existe pas
         }
-        $$=h;
+        $$=h; // Sinon on renvoie le dernier de ceux-ci pour que "affectation" puisse changer sa valeur
     }
     |valeur_bloc '.' WIDTH{
         std::shared_ptr<Largeur> l(std::make_shared<Largeur>());
@@ -294,7 +294,7 @@ valeur_int:
         int val1 = $1->calculer(driver.getContexteint());
         int val2 = $3->calculer(driver.getContexteint());
         std::string s;
-        if(($1->getSuffixe(driver.getContexteint()).back()='x')){
+        if(($1->getSuffixe(driver.getContexteint()).back()='x')){ // Avec ce IF, on permet à l'utilisateur d'ajouter plusieurs entiers de type différents ("10px+10%"" par exemple) et on ne garde que le type du premier entier rentré (qui serait donc "px" en l'occurrence)
             s="px";
         }
         else{
@@ -429,7 +429,7 @@ valeur_couleur:
 couleur:
     HEXANUMBER {
         for(auto & c : $1){
-            c=std::toupper(c);
+            c=std::toupper(c); // On met tout en majuscule pour pouvoir comparer les couleurs en tant que std::string
         }
         $$=$1;
     }
@@ -500,7 +500,7 @@ valeur_bloc:
     ID{
         $$=driver.getVariablebloc($1);
     }
-    |TITRE selecteur {
+    |TITRE selecteur { // On commence les indices à 0
         $$=prog.getTitre($2);
     }
     | PARAGRAPH selecteur {
@@ -534,7 +534,7 @@ bloc:
         $$=std::make_shared<Image>($2.attr,$2.text);
     }
 
-objet:
+objet: 
     texte{
         $$.attr=std::vector<std::shared_ptr<Attribut>>();
         $$.text=$1;
@@ -575,47 +575,20 @@ attribut:
 //----------------------------------------------------------------------------------------------------------------
 // Conditionnelles
 
-conditionelle:
+conditionelle: // Nous n'avons pas réussi à n'affecter des variables que lorsque la condition est vérifié (le parser reconnaît une affectation et l'effectue à la lecture)
     IF '(' condition ')' ':' code code_else ENDIF {
         if($3){
-            std::cout << "\n\n\nEZZZZZZZZZZZZZZZZz\n\n\n";
+            std::cout << "Condition vérifiée, exécution des instructions du SI" << std::endl;
         }
         else{
-            std::cout << "\n\n\nA CHIER\n\n\n";
+            std::cout << $7 << std::endl;
         }
     }
-    /*
-    !T 'Un titre'
-!T[0].couleurFond = #000000
-SI (!T[0].couleurFond == #000000) : !T[0].couleurTexte = #FF0000 FINSI
-*/
-/*
-!T 'Un titre'
-a=!T[0]
-SI (!T[0] == !T[0]) : !T[0].couleurTexte = #FF0000 FINSI
-*/
-/*
-    !T 'Un titre'
-!T[0].couleurFond = #000000
-SI (!T[0].couleurFond == #000000) : !T 'Un titre' FINSI
-*/
-/*
-    !T 'Un titre'
-!T[0].couleurFond = #000000
-SI (true) : !T 'Un titre' FINSI
-*/
-/*
-!T 'Un titre'
-monTitre = !T[0]
-monTitre.couleurTexte = #FF0000
-monTitre.largeur= 500px
-
-*/
-
 
 code_else:
+    {$$="Condition non vérifiée, pas de statement SINON";}
     |ELSE ':' code{
-
+        $$="Condition non vérifiée, exécution des instructions du SINON";
     }
 
 condition:
@@ -693,6 +666,7 @@ style_comp:
     |identifiant_style{
         $$=$1->getAttributs();
     }
+
 //----------------------------------------------------------------------------------------------------------------
 // Boucles for
 
@@ -760,14 +734,14 @@ operation_for:
 //----------------------------------------------------------------------------------------------------------------
 // Meta_données (@define)
 
-meta_donnees:
+meta_donnees: // Contrairement aux attributs CSS, on ne sait pas vraiment si mettre plusieurs fois une définition en HTML pose problème, on a donc mis une seule définition de chaque par page puisque cela ne peut être changé qu'ici
     DEFINITION '('ENCODAGE')' '{'texte'}'{
         prog.setEncodage($6);
     }
     | DEFINITION '('ICON')' '{'texte'}'{
         prog.setIcone($6);
     }
-    | DEFINITION '('CSS')' '{'texte'}'{
+    | DEFINITION '('CSS')' '{'texte'}'{ // Sauf pour les pages CSS qui peuvent être plusieurs dans un même fichier
         prog.addCss($6);
     }
     | DEFINITION '('LANG')' '{'texte'}'{
@@ -787,16 +761,16 @@ meta_donnees:
     }
 
 //----------------------------------------------------------------------------------------------------------------
-// Commentaire (std::string à modifier)
+// Commentaire (des std::string à modifier)
 
 commentaire:
     COMMENTAIRE {
-        $$ = Commentaire($1).calculer();
+        $$ = Commentaire($1).calculer(); // On enlève les %% à gauche et les %%% de part et d'autre
     }
 
 texte:
     TEXT {
-        $$ = Text($1).calculer();
+        $$ = Text($1).calculer(); // On enlève les '' de part et d'autre et on remplace \' par '
     }
 
 %%

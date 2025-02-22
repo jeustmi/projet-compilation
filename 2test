@@ -31,7 +31,7 @@ couleurFond : #000000
 !TT 'Premier sous-titre'
 !T 'Deuxième Titre'%%%
 
-%%%indice = 2 
+%%%indice = 1
 %% mettre 2 en indice ne permet pas de retrouver la page du prof (les indices commencent bien à 0, cf le sujet n°1)
 couleur1 = #ff0000
 couleur2 = rgb(0,255,0)
@@ -44,7 +44,7 @@ style1 = [couleurFond : couleur2]
 bloc = !P[indice-1]
 bloc.style = style1%%%
 
-!T 'Un titre'
+%%%!T 'Un titre'
 !T[0].couleurFond = #000000
 SI (!T[0].couleurFond == #000000) :
 !T[0].couleurTexte = #FF0000
@@ -54,12 +54,11 @@ SI (monTitre.couleurTexte == rgb(255,0,0)):
 monTitre.largeur=500px
 SINON:
 monTitre.largeur=800px
-FINSI
+FINSI%%%
 
-%%%POUR i [0,255] +25 :
+POUR i [0,255] +25 :
 !T 'Titre ' i/25
-!T[i/25].couleurTexte = rgb(i,0,0)
-FINI%%%
+FINI
 
 %%%a = 10001
 @STYLE ( titre1 ) [
