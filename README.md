@@ -11,6 +11,8 @@ Différentes remarques :
 Dans le sujet :
 Les indices des sélécteurs (pour !T[i] par exemple) commencent à 0 dans la partie 1 du sujet et dans l'exemple 6-7, mais le visuel de l'exemple 5 les fait commencer à 1.
 
+Dans l'exemple 2, on a la ligne "@DEFINE (icone) {'rick.ico'}" qui renvoie "<link rel="icon" type="image/jpg" href="./rickICO.jpg" />", bien que l'on n'ait aucune raison de modifier le nom du fichier.
+
 Le code html de l'exemple 6 est eronné, c'est l'attribut "color" qui est censé être "#ff0000" et non pas "background-color".
 
 Pour notre programme :
