@@ -17,8 +17,8 @@ class Style;
 class Bloc{
 
     public:
-    //Bloc(std::string const & text) : _attr(),_text(text) {}
     Bloc(std::vector<std::shared_ptr<Attribut>> const & attr,std::string const & text) : _attr(attr),_text(text) {}
+    //Note : le calcul du programme et des blocs est sensible au contexte. Cette proriété avait pour but de permettre l'execution des boucles et des conditionelles.
     bool operator==(Bloc const & b) const {return (_attr==b._attr) & (_text==b._text);}
     bool operator!=(Bloc const & b) const {return (_attr!=b._attr) | (_text!=b._text);}
     virtual std::string type() const {return _text;}; 

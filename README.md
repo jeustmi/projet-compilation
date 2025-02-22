@@ -9,22 +9,23 @@ Différentes remarques :
 
 
 Dans le sujet :
-Les indices des sélécteurs (pour !T[i] par exemple) commencent à 0 dans la partie 1 du sujet et dans l'exemple 6-7, mais le visuel de l'exemple 5 les fait commencer à 1
+Les indices des sélécteurs (pour !T[i] par exemple) commencent à 0 dans la partie 1 du sujet et dans l'exemple 6-7, mais le visuel de l'exemple 5 les fait commencer à 1.
 
-Le code html de l'exemple 6 est eronné, c'est l'attribut "color" qui est censé être "#ff0000" et non pas "background-color"
+Le code html de l'exemple 6 est eronné, c'est l'attribut "color" qui est censé être "#ff0000" et non pas "background-color".
 
 Pour notre programme :
+Le parser ainsi que certains des fichiers hh ont été commentés pour expliciter le raisonemment derrière nos décisions.
+
 Nos indices de sélécteurs commencent effectivement à 0 pour conformer à la partie 1.
 
 Nos Boucles IF et For ne marchent pas complètement et ne permettent pas d'atteindre le résultat attendu dans les exemples 6  et 7 respectivement.
-Les boucles IF permenntent de reconnaître si la condition est vérifiée (un messsage dans la console le confirme) mais pas d'affecter des valeurs à des variables seulement dans certains cas.
+Les boucles IF permettent de reconnaître si la condition est vérifiée (un messsage dans la console le confirme) mais l'affectation des variables a lieu indépendamment de la vérification de la condition.
 
 Les boucles FOR ne marchent que lors de la création de blocs ("!T 'titre' i/25" par exemple) et ne peuvent avoir qu'une seule ligne, sans quoi le parser ne la reconnaît pas.
-Pour tester nos FOR, vous pouvez exécuter "./projet" puis écrire dans la console
+Pour tester nos FOR, vous pouvez par exemple exécuter "./projet" puis écrire dans la console:
 "
 POUR i [0,255] +25 :
 !T 'Titre ' i/25
 FINI
 "
-qui donne le résultat attendu (on peut aussi créer des paragraphes et images)
-
+qui donne le résultat attendu (on peut aussi créer des paragraphes et images tant que ceux ci ne dépendent pas de i).

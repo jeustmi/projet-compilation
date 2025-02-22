@@ -13,7 +13,7 @@
 class Programme{
     public:
     Programme() = default;
-
+    //Note : le calcul du programme et des blocs est sensible au contexte. Cette proriété avait pour but de permettre l'execution des boucles et des conditionelles.
     std::string creation_page(const Driver & d);
     std::string calculer(const Driver & d);
     void addComm(const std::string & c){_comms.push_back(c);}

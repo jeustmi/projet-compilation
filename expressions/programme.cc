@@ -37,16 +37,6 @@ std::string Programme::creation_page(const Driver & d) {
                 if(s.type()==b->type()){
                     b->setAttributs(s.getAttributs());
                 }
-                /*if(s.type()=="p"){
-
-                }
-                else if(s.type()[0]=='h'){
-                    for(int i = 0; i<10; ++i){
-                        if(s.type()=="h"+std::to_string(i)){
-                            
-                        }
-                    }
-                }*/
             }
         }
         
@@ -61,10 +51,7 @@ std::string Programme::creation_page(const Driver & d) {
     
     _page.decTab();
     _page+="</html>";
-
-
-    std::cout<<"-------------------------------------------\n";
-    std::cout<<_page.getCode()<<std::endl;
+    
     return _page.getCode();
 }
 
@@ -85,16 +72,6 @@ std::string Programme::calculer(const Driver & d) {
                 if(s.type()==b->type()){
                     b->setAttributs(s.getAttributs());
                 }
-                /*if(s.type()=="p"){
-
-                }
-                else if(s.type()[0]=='h'){
-                    for(int i = 0; i<10; ++i){
-                        if(s.type()=="h"+std::to_string(i)){
-                            
-                        }
-                    }
-                }*/
             }
         }
         
