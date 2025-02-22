@@ -26,5 +26,5 @@ POUR i [0,255] +25 :
 !T 'Titre ' i/25
 FINI
 "
-qui donne le résultat attendu (on eput aussi créer des paragraphes et images)
+qui donne le résultat attendu (on peut aussi créer des paragraphes et images)
 
